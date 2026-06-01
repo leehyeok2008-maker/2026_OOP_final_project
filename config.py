@@ -1,0 +1,6 @@
+WIDTH = 800
+HEIGHT = 600
+FPS = 60
+BACKGROUND_COLOR = (255, 255, 255)
+
+APP_NAME = "Drone Delivery"
