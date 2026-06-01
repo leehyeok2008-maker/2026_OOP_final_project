@@ -1,6 +1,8 @@
+from app import App
+
 def main():
-    print('a')
-    pass
+    app = App()
+    app.run()
 
 if __name__ == '__main__':
     main()
