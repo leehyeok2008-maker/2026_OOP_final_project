@@ -1,5 +1,3 @@
-import math
-import pygame
 from pygame import Vector2, Surface
 from entity import Entity
 from physics.rigidbody2d import RigidBody2D
@@ -16,6 +14,6 @@ class Cargo(Entity):
         )
 
     def update(self, dt) -> list[str]:
+        self.rigidbody.update(dt)
         return []
-
         
