@@ -1,8 +1,10 @@
+import math
+import pygame
 from pygame import Vector2, Surface
 from entity import Entity
 from physics.rigidbody2d import RigidBody2D
 
-class Drone(Entity):
+class Cargo(Entity):
     def __init__(
         self, sprite : Surface, mass : float, moment : float, 
         position : Vector2 | None = None, velocity : Vector2 | None = None,
