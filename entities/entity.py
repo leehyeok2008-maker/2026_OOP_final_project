@@ -1,3 +1,5 @@
+import math
+import pygame
 from pygame import Vector2, Surface
 from abc import ABC, abstractmethod
 from physics.rigidbody2d import RigidBody2D
@@ -10,6 +12,8 @@ class Entity(ABC):
     def update(self, dt) -> list[str]:
         return []
 
-    @abstractmethod
     def render(self, screen) -> None:
-        return 
+        angle_deg = math.degrees(self.rigidbody.angle)
+        rotated_sprite = pygame.transform.rotate(self.sprite, angle_deg)
+        rect = rotated_sprite.get_rect(center=self.rigidbody.position)
+        screen.blit(rotated_sprite, rect)
