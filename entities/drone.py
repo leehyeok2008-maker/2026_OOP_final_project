@@ -11,7 +11,7 @@ class Drone(Entity):
         controller : Controller = ManualController(),
     ):  
         self.commands = []
-        self.controller = controller
+        self. controller = controller
         super().__init__(
             sprite=sprite,
             rigidbody=RigidBody2D(mass, moment, position, velocity, angle, angular_velocity)
