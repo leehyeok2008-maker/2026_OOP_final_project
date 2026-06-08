@@ -11,6 +11,7 @@ class Drone(Entity):
         controller : Controller = ManualController(),
     ):  
         self.commands = []
+
         self.controller = controller
         super().__init__(
             sprite=sprite,
