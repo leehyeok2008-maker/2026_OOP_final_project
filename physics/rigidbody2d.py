@@ -1,3 +1,4 @@
+import math
 from pygame import Vector2
 class RigidBody2D:
     def __init__(
@@ -45,17 +46,55 @@ class RigidBody2D:
         self.angular_velocity = angular_velocity
         self.torque = 0.0
 
+    #region 내장 유틸리티 함수
     @staticmethod
     def cross(vec1 : Vector2, vec2 : Vector2) -> float:
+        '''
+        2차원 벡터의 외적 연산
+        '''
         return vec1.x * vec2.y - vec1.y * vec2.x
     
+    def transform_local_vector(self, vec : Vector2) -> Vector2:
+        '''
+        상대좌표 벡터를 절대좌표 벡터로 변환.
+        (물체 방향에 따라 회전.)
+        '''
+        return vec.rotate(math.degrees(self.angle))
+    
+    def transform_absolute_vector(self, vec : Vector2) -> Vector2:
+        '''
+        절대좌표 벡터를 상대좌표 벡터로 변환.
+        (물체 방향에 따라 회전)
+        '''
+        return vec.rotate(math.degrees(-self.angle))
+    
+    def transform_local_position(self, vec : Vector2) -> Vector2:
+        '''
+        상대좌표 위치를 절대좌표 위치로 변환.
+        (물체 방향에 따라 회전 및 평행이동)
+        '''
+        return vec.rotate(math.degrees(self.angle)) + self.position
+    
+    def transform_absolute_position(self, vec : Vector2) -> Vector2:
+        '''
+        절대좌표 위치를 상대좌표 위치로 변환.
+        (물체 방향에 따라 회전 및 평행이동)
+        '''
+        return vec.rotate(math.degrees(-self.angle)) - self.position
+    #endregion
+
     def apply_force(self, force : Vector2, point : Vector2 | None = None, is_local : bool = False):
-        self.force += force
-        if point is not None:
-            if is_local:
-                self.torque += self.cross(point, force)
-            else:
-                self.torque += self.cross(point - self.position, force)
+        '''
+        물체에 작용하는 힘과 토크를 추가하는 함수
+        is_local == False(default)인 경우, 절대좌표 값으로 고려한다.
+        is_local == True인 경우, 해당 물체 기준 상대좌표 값으로 고려한다.
+        '''
+        if is_local:
+            self.force += self.transform_local_vector(force)
+            if point is not None: self.torque += self.cross(point, force) 
+        else:
+            self.force += force
+            if point is not None: self.torque += self.cross(point - self.position, force)
 
     def clear_force(self):
         self.force.update(0, 0)

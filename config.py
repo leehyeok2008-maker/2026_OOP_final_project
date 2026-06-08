@@ -4,6 +4,7 @@ FPS = 60
 BACKGROUND_COLOR = (255, 255, 255)
 
 APP_NAME = "Drone Delivery"
+DEFAULT_PX_PER_METER = 100
 
 KEY_W = "KEY_W"
 KEY_S = "KEY_S"
