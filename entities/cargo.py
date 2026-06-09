@@ -15,7 +15,6 @@ class Cargo(Entity):
         )
         self.rigidbody = RigidBody2D(mass, moment, self.transform, Vector2(0, 0) if velocity is None else velocity, angular_velocity)
 
-    def update(self, dt) -> list[str]:
+    def update(self, dt) -> None:
         self.rigidbody.update(dt)
-        return []
         

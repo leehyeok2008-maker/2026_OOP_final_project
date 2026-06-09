@@ -28,10 +28,8 @@ class Drone(Entity):
         self.right_arm_position = Vector2(10.0, 0)
         #endregion
 
-    def handle_input(self, inputs):
-        self.commands = self.controller.command(inputs)
-
-    def update(self, dt) -> list[str]:
+    def update(self, dt) -> None:
+        self.commands = self.controller.command(self.rigidbody)
         for command in self.commands:
             if command == "MOVE_UP":
                 self.rigidbody.apply_force(Vector2(0, self.max_left_thrust), self.left_arm_position, is_local=True)
@@ -49,7 +47,7 @@ class Drone(Entity):
 
         self.rigidbody.update(dt)
         self.commands.clear()
-        return []
+        return
     
 
 
