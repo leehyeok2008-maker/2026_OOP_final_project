@@ -1,5 +1,6 @@
 from pygame import Vector2, Surface
 from entity import Entity
+from physics.transform import Transform
 from physics.rigidbody2d import RigidBody2D
 
 class Cargo(Entity):
@@ -10,8 +11,9 @@ class Cargo(Entity):
     ):
         super().__init__(
             sprite=sprite,
-            rigidbody=RigidBody2D(mass, moment, position, velocity, angle, angular_velocity)
+            transform=Transform(Vector2(0, 0) if position is None else position, angle)
         )
+        self.rigidbody = RigidBody2D(mass, moment, self.transform, Vector2(0, 0) if velocity is None else velocity, angular_velocity)
 
     def update(self, dt) -> list[str]:
         self.rigidbody.update(dt)
