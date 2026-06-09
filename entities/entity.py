@@ -19,8 +19,8 @@ class Entity(ABC):
         self.transform = transform
         
     @abstractmethod
-    def update(self, dt) -> list[str]:
-        return []
+    def update(self, dt) -> None:
+        pass
 
     def render(self, screen) -> None:
         angle_deg = math.degrees(self.transform.angle)

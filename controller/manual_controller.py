@@ -1,3 +1,4 @@
+import pygame
 from config import *
 from controller.controller import Controller
 

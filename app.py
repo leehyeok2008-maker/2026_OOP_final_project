@@ -1,8 +1,10 @@
 import sys
 import pygame
 from config import *
+from input import Input
 from scenes.scene import Scene
 from scenes.empty_scene import EmptyScene
+from event_manager import EventManager
 
 class App():
     def __init__(self):
@@ -22,7 +24,7 @@ class App():
 
         self.is_running = True
         self.current_scene  = EmptyScene() # 나중에 진짜 기본 Scene (StartScene)으로 수정
-    
+        self.scenes = {}
     
     def handle_event(self):
         pg_events = pygame.event.get()
@@ -31,13 +33,12 @@ class App():
             if event.type == pygame.QUIT:
                 self.is_running = False
 
-        self.current_scene.handle_event(pg_events)
+        Input.update(pg_events)        
 
     def update(self):
-        scene_events = self.current_scene.update(self.dt)
-        # for scene_event in scene_events: # 분기 구현. 신 전환 등
+        self.current_scene.update(self.dt)
     
-    def draw(self):
+    def render(self):
         self.screen.fill(self.background_color)
         self.current_scene.render(self.screen)
         pygame.display.flip()
@@ -47,7 +48,7 @@ class App():
             self.dt = self.clock.tick(self.fps) / 1000
             self.handle_event()
             self.update()
-            self.draw()
+            self.render()
 
         pygame.quit()
         sys.exit()
