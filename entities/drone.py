@@ -2,18 +2,20 @@ from pygame import Vector2, Surface
 from entity import Entity
 from physics.rigidbody2d import RigidBody2D
 from physics.transform import Transform
+from physics.collider import RectCollider
 class Drone(Entity):
     def __init__(
         self, sprite : Surface, mass : float, moment : float, 
         position : Vector2 | None = None, velocity : Vector2 | None = None,
         angle : float = 0.0, angular_velocity : float = 0.0,
     ):  
+        transform = Transform(position or Vector2(0, 0), angle)
         super().__init__(
             sprite=sprite,
-            transform=Transform(position or Vector2(0, 0), angle)
+            transform=transform,
+            collider=RectCollider(50, 50,  transform)
         )
         self.rigidbody = RigidBody2D(mass, moment, self.transform, velocity or Vector2(0, 0), angular_velocity)
-
         self.commands = []
 
         #region 드론 내부 변수
@@ -38,7 +40,7 @@ class Drone(Entity):
 
     @property
     def right_thrust(self):
-        return self.__left_thrust
+        return self.__right_thrust
     
     @right_thrust.setter
     def right_thrust(self, val):

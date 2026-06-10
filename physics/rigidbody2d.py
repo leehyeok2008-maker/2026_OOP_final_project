@@ -63,7 +63,20 @@ class RigidBody2D:
         else:
             self.force += force
             if point is not None: self.torque += self.cross(point - self.transform.position, force)
-
+    
+    def apply_impulse(self, impulse: Vector2, point: Vector2 | None = None, is_local : bool = False):
+        '''
+        물체에 충격량을 작용하는 함수
+        is_local == False(default)인 경우, 절대좌표 값으로 고려한다.
+        is_local == True인 경우, 해당 물체 기준 상대좌표 값으로 고려한다.
+        '''
+        if is_local:
+            self.velocity += self.transform.transform_local_vector(impulse / self.mass)
+            if point is not None: self.angular_velocity += self.cross(point, impulse) / self.moment
+        else:
+            self.velocity += impulse / self.mass
+            if point is not None: self.angular_velocity += self.cross(point - self.transform.position, impulse) / self.moment
+    
     def clear_force(self):
         self.force.update(0, 0)
         self.torque = 0.0
