@@ -1,24 +1,53 @@
-from pygame import Surface, Vector2
-from abc import ABC, abstractmethod
-from entities.drone import Drone
-from entities.cargo import Cargo
+class Stage1:
 
-class Stage(ABC):
-    def __init__(self, drone : Drone, cargo : Cargo, map):
-        self.drone = drone
-        self.cargo = cargo
-        self.map = map
-        self.grav_acc = Vector2(0, -9.8)
+    def __init__(self):
 
-    def update(self, dt : float) -> list[str]:
-        self.drone.rigidbody.apply_force(self.grav_acc)
-        self.cargo.rigidbody.apply_force(self.grav_acc)
-        
-        self.drone.update(dt)
-        self.cargo.update(dt)
-        return []
+        self.tutorial_step = 0
 
-    def render(self, screen : Surface) -> None:
-        self.drone.render(screen)
-        self.cargo.render(screen)
-        pass
+    def update(self, dt):
+
+        if self.tutorial_step == 0:
+
+            if self.drone.position.y < 300:
+                self.tutorial_step = 1
+
+        elif self.tutorial_step == 1:
+
+            if self.left_target_reached:
+                self.tutorial_step = 2
+
+        elif self.tutorial_step == 2:
+
+            if self.cargo_attached:
+                self.tutorial_step = 3
+
+        elif self.tutorial_step == 3:
+
+            if self.goal_reached:
+                return "CLEAR"
+
+    def get_tutorial_text(self):
+
+        texts = [
+
+            "~ 키를 눌러 상승.",
+
+            "~ 키를 눌러 좌우이동.",
+
+            "화물 위로 이동하세요.",
+
+            "화물을 목적지까지 운반하세요."
+        ]
+
+        return texts[self.tutorial_step]
+
+
+    def render(self, screen):
+
+        text = font.render(
+            self.get_tutorial_text(),
+            True,
+            (255, 255, 255)
+        )
+
+        screen.blit(text, (20, 20))
