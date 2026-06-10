@@ -22,6 +22,9 @@ class Entity(ABC):
     def update(self, dt) -> None:
         pass
 
+    def on_collision(self, other):
+        pass
+
     def render(self, screen) -> None:
         angle_deg = math.degrees(self.transform.angle)
         rotated_sprite = pygame.transform.rotate(self.sprite, angle_deg)

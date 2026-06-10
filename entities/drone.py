@@ -10,9 +10,9 @@ class Drone(Entity):
     ):  
         super().__init__(
             sprite=sprite,
-            transform=Transform(Vector2(0, 0) if position is None else position, angle)
+            transform=Transform(position or Vector2(0, 0), angle)
         )
-        self.rigidbody = RigidBody2D(mass, moment, self.transform, Vector2(0, 0) if velocity is None else velocity, angular_velocity)
+        self.rigidbody = RigidBody2D(mass, moment, self.transform, velocity or Vector2(0, 0), angular_velocity)
 
         self.commands = []
 
@@ -26,6 +26,7 @@ class Drone(Entity):
         self.right_arm_position = Vector2(10.0, 0)
         #endregion
 
+    #region 기타 구현
     @property
     def left_thrust(self):
         return self.__left_thrust
@@ -54,6 +55,7 @@ class Drone(Entity):
 
     def add_commands(self, commands : list[str]):
         self.commands += commands
+    #endregion
     
     def update(self, dt):
         self.set_thrust(0.0, 0.0)

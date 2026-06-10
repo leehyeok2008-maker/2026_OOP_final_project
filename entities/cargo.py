@@ -11,10 +11,10 @@ class Cargo(Entity):
     ):
         super().__init__(
             sprite=sprite,
-            transform=Transform(Vector2(0, 0) if position is None else position, angle)
+            transform=Transform(position or Vector2(0, 0), angle)
         )
-        self.rigidbody = RigidBody2D(mass, moment, self.transform, Vector2(0, 0) if velocity is None else velocity, angular_velocity)
+        self.rigidbody = RigidBody2D(mass, moment, self.transform, velocity or Vector2(0, 0), angular_velocity)
 
-    def update(self, dt) -> None:
+    def update(self, dt):
         self.rigidbody.update(dt)
         
