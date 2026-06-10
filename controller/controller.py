@@ -1,8 +1,12 @@
 from abc import ABC, abstractmethod
-class Controller(ABC):
-    @abstractmethod
-    def command(self, input) -> list[str]:
-        return []
+from entities.drone import Drone
 
-    def __call__(self, input) -> list[str]:
-        return self.command(input)
+class Controller(ABC):
+    def __init__(self, drone : Drone):
+        self.drone : Drone = drone
+    @abstractmethod
+    def command(self, input):
+        pass
+
+    def __call__(self, input):
+       self.command(input)
