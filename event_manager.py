@@ -6,7 +6,7 @@ class EventManager:
 
     @classmethod
     def subscribe(cls, event_type : str, callback : Callable):
-        cls._listeners[event_type].apped(callback)
+        cls._listeners[event_type].append(callback)
 
     @classmethod
     def publish(cls, event_type : str, data : Any = None):
