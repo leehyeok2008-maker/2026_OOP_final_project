@@ -7,10 +7,19 @@ class UIObject(ABC):
         self.width = width
         self.height = height
         self.visible = True
+
+    def handle_event(self, event):
+        pass
+
+    def update(self, dt):
+        pass
+
         
     @abstractmethod
     def render(self, screen : Surface) -> None:
         pass
 
     def contain(self, px : int, py : int) -> bool:
-        return (self.x <= px <= (self.x + self.width)) and (self.y <= py <= (self.y + self.width))
+        return (self.x <= px <= (self.x + self.width)) and (self.y <= py <= (self.y + self.height))
+
+
