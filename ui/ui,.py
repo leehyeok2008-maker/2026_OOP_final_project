@@ -8,12 +8,25 @@ class UI:
         if ui_object not in self.ui_objects:
             self.ui_objects.append(ui_object)
 
-    def remove(self, ui_object : UIObject):
-        self.ui_objects.remove(ui_object)
+    def remove(self, ui_object: UIObject):
+        if ui_object in self.ui_objects:
+            self.ui_objects.remove(ui_object)
 
     def render(self, screen : Surface):
         for ui_obj in self.ui_objects:
             if ui_obj.visible:
                 ui_obj.render(screen)
+
+    def update(self, dt):
+        for ui_obj in self.ui_objects:
+            ui_obj.update(dt)
+
+
+    def handle_event(self, event):
+
+        for ui_obj in self.ui_objects:
+
+            if ui_obj.visible:
+                ui_obj.handle_event(event)
 
             
