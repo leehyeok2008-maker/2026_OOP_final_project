@@ -21,6 +21,7 @@ class UI:
         for ui_obj in self.ui_objects:
             ui_obj.update(dt)
 
+
     def handle_event(self, event):
 
         for ui_obj in self.ui_objects:

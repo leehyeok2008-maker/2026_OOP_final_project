@@ -14,6 +14,7 @@ class UIObject(ABC):
     def update(self, dt):
         pass
 
+
         
     @abstractmethod
     def render(self, screen : Surface) -> None:
