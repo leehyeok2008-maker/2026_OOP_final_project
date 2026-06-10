@@ -6,6 +6,11 @@ from physics.collider import Collider, RectCollider, CircleCollider
 
 
 class ColliderManager:
+    '''
+    self._entries: Entity와 대응하는 Collider의 딕셔너리
+    register를 통해 _entries 업데이트
+    check_all을 통해 on_collision 실행
+    '''
     def __init__(self):
         self._entries: dict[Entity, Collider] = {}
 
