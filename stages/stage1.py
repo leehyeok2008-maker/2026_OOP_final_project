@@ -1,10 +1,22 @@
-class Stage1:
+from .stage import Stage
+from entities import *
+import pygame
+
+class Stage1(Stage):
 
     def __init__(self):
+        super().__init__(
+            Drone(),
+            Cargo(),
+            None,
+        )
 
         self.tutorial_step = 0
+        self.font = pygame.font.Font(None, 40)
 
     def update(self, dt):
+
+        super().update(dt)
 
         if self.tutorial_step == 0:
 
@@ -29,22 +41,19 @@ class Stage1:
     def get_tutorial_text(self):
 
         texts = [
-
-            "~ 키를 눌러 상승.",
-
-            "~ 키를 눌러 좌우이동.",
-
+            "W 키를 눌러 상승하세요.",
+            "A, D 키로 이동하세요.",
             "화물 위로 이동하세요.",
-
             "화물을 목적지까지 운반하세요."
         ]
 
         return texts[self.tutorial_step]
 
-
     def render(self, screen):
 
-        text = font.render(
+        super().render(screen)
+
+        text = self.font.render(
             self.get_tutorial_text(),
             True,
             (255, 255, 255)

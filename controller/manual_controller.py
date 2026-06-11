@@ -1,19 +1,22 @@
 import pygame
 from config import *
-from input import Input
+from input_manager import InputManager
 from entities.drone import Drone
-from controller.controller import Controller
+from .controller import Controller
 
 class ManualController(Controller):
-    def command(self, inputs):
+    def __init__(self, drone: Drone):
+        super().__init__(drone)
+
+    def command(self, input):
         commands = [] 
-        if Input.is_key_down(pygame.K_a) or Input.is_key_down(pygame.K_LEFT):
+        if InputManager.is_key_down(pygame.K_a) or InputManager.is_key_down(pygame.K_LEFT):
             commands.append("MOVE_LEFT")
-        if Input.is_key_down(pygame.K_d) or Input.is_key_down(pygame.K_RIGHT):
+        if InputManager.is_key_down(pygame.K_d) or InputManager.is_key_down(pygame.K_RIGHT):
             commands.append("MOVE_RIGHT")
-        if Input.is_key_down(pygame.K_w) or Input.is_key_down(pygame.K_UP):
+        if InputManager.is_key_down(pygame.K_w) or InputManager.is_key_down(pygame.K_UP):
             commands.append("MOVE_UP")
-        if Input.is_key_down(pygame.K_d) or Input.is_key_down(pygame.K_DOWN):
+        if InputManager.is_key_down(pygame.K_d) or InputManager.is_key_down(pygame.K_DOWN):
             commands.append("MOVE_DOWN")
         self.drone.add_commands(commands)
         

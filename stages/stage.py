@@ -1,8 +1,7 @@
 from pygame import Surface, Vector2
 from abc import ABC, abstractmethod
-from entities.drone import Drone
-from entities.cargo import Cargo
-from physics.collider_manager import ColliderManager
+from entities import *
+from physics import ColliderManager
 
 class Stage(ABC):
     def __init__(self, drone : Drone, cargo : Cargo, map):
@@ -15,7 +14,6 @@ class Stage(ABC):
         self.collider_manager.register(self.cargo, self.cargo.collider)
         
     def update(self, dt : float):
-        self.
         self.drone.rigidbody.apply_force(self.grav_acc)
         self.cargo.rigidbody.apply_force(self.grav_acc)
         self.drone.update(dt)

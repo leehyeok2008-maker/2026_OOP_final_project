@@ -1,35 +1,39 @@
+import pygame
 from scenes.scene import Scene
 
 from stages.stage1 import Stage1
 from stages.stage2 import Stage2
-from stages.stage3 import Stage3
-
-from scenes.end_scene import EndScene
+#from stages.stage3 import Stage3
+from ui import UIManager, UIText
 
 
 class GameScene(Scene):
 
-    def __init__(self, app):
-
-        super().__init__(app)
+    def __init__(self):
 
         self.stages = [
             Stage1(),
             Stage2(),
-            Stage3()
+            #Stage3()
         ]
 
+        self.result = None
         self.current_stage_idx = 0
         self.current_stage = self.stages[0]
 
-    def handle_event(self, event):
+        #region UI 구성
+        self.ui_manager = UIManager()
 
-        self.current_stage.handle_event(event)
+        title_font = pygame.font.SysFont("malgungothic", 100)
+        button_font = pygame.font.SysFont("malgungothic", 50)
+        info_font = pygame.font.SysFont("malgungothic", 30)
+        #endregion
 
     def update(self, dt):
 
-        result = self.current_stage.update(dt)
-
+        self.current_stage.update(dt)
+        self.ui_manager.update(dt)
+        '''
         if result == "CLEAR":
 
             self.current_stage_idx += 1
@@ -58,7 +62,8 @@ class GameScene(Scene):
                     success=False
                 )
             )
+        '''
 
     def render(self, screen):
-
         self.current_stage.render(screen)
+        self.ui_manager.render(screen)
