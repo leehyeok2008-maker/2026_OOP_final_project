@@ -1,118 +1,60 @@
 import pygame
 
+from config import *
+from pygame import Surface
 from scenes.scene import Scene
-from scenes.game_scene import GameScene
+from ui.ui_manager import UIManager
+from ui.ui_text import UIText
+from ui.ui_button import UIButton
+from event_manager import EventManager
 
 
 class StartScene(Scene):
+    def __init__(self):
+        
+        self.ui_manager = UIManager()
 
-    def __init__(self, app):
+        title_font = pygame.font.SysFont("malgungothic", 100)
+        button_font = pygame.font.SysFont("malgungothic", 50)
+        info_font = pygame.font.SysFont("malgungothic", 30)
 
-        super().__init__(app)
+        self.title_text = UIText(
+                0,
+                0,
+                "드론 시뮬레이터",
+                title_font
+            )
+        self.title_text.center = (WIDTH//2, HEIGHT//2)
 
-        self.title_font = pygame.font.Font(
-            None,
-            100
-        )
+        self.start_button = UIButton(
+                0,
+                0,
+                200,
+                70,
+                "시작하기",
+                button_font,
+                callback=lambda : EventManager.publish("CHANGE_SCENE", "GAME_SCENE")
+            )
+        self.start_button.center = (WIDTH//2, HEIGHT//2 + 100)
 
-        self.button_font = pygame.font.Font(
-            None,
-            50
-        )
+        self.description_text = UIText(
+                0,
+                0,
+                "시작하기 버튼을 클릭하세요.",
+                info_font,
+                (180, 180, 180)
+            )
+        self.description_text.center = (WIDTH//2, HEIGHT//2 + 200)
 
-        self.button_rect = pygame.Rect(
-            540,
-            450,
-            200,
-            70
-        )
-
-    def handle_event(self, event):
-
-        if event.type == pygame.MOUSEBUTTONDOWN:
-
-            if self.button_rect.collidepoint(
-                event.pos
-            ):
-
-                self.app.change_scene(
-                    GameScene(self.app)
-                )
+        self.ui_manager.set([
+            self.title_text,
+            self.description_text,
+            self.start_button,
+        ])
+    
 
     def update(self, dt):
-        pass
+        self.ui_manager.update(dt)
 
-    def render(self, screen):
-
-        # 검은 배경
-        screen.fill((0, 0, 0))
-
-        # 제목
-        title = self.title_font.render(
-            "드론 시뮬레이터",
-            True,
-            (255, 255, 255)
-        )
-
-        title_rect = title.get_rect(
-            center=(640, 220)
-        )
-
-        screen.blit(
-            title,
-            title_rect
-        )
-
-        # 제목 아래 선
-        pygame.draw.line(
-            screen,
-            (255, 255, 255),
-            (300, 300),
-            (980, 300),
-            2
-        )
-
-        # 버튼
-        pygame.draw.rect(
-            screen,
-            (40, 120, 255),
-            self.button_rect,
-            border_radius=10
-        )
-
-        # 버튼 텍스트
-        button_text = self.button_font.render(
-            "시작하기",
-            True,
-            (255, 255, 255)
-        )
-
-        button_text_rect = button_text.get_rect(
-            center=self.button_rect.center
-        )
-
-        screen.blit(
-            button_text,
-            button_text_rect
-        )
-
-        # 설명
-        info_font = pygame.font.Font(
-            None,
-            30
-        )
-
-        info_text = info_font.render(
-            "시작하기 버튼을 클릭하세요.",
-            True,
-            (180, 180, 180)
-        )
-
-        info_rect = info_text.get_rect(
-            center=(640, 600)
-        )
-
-        screen.blit(
-            info_text,
-            info_rect
-        )
+    def render(self, screen : Surface):
+        self.ui_manager.render(screen)

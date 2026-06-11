@@ -1,5 +1,5 @@
 from pygame import Vector2, Surface
-from entity import Entity
+from .entity import Entity
 from physics.transform import Transform
 from physics.rigidbody2d import RigidBody2D
 from physics.collider import RectCollider

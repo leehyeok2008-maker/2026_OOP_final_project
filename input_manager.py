@@ -1,6 +1,9 @@
 import pygame
 
-class Input:
+class InputManager:
+    '''
+    사용자 입력 요소를 관리하는 클래스
+    '''
     _keys_down = set()
     _keys_pressed = set()
     _keys_released = set()

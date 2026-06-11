@@ -1,10 +1,9 @@
 import sys
 import pygame
 from config import *
-from input import Input
-from scenes.scene import Scene
-from scenes.empty_scene import EmptyScene
+from scenes import StartScene, GameScene, Scene
 from event_manager import EventManager
+from input_manager import InputManager
 
 class App():
     def __init__(self):
@@ -23,17 +22,28 @@ class App():
         self.dt = 0.0
 
         self.is_running = True
-        self.current_scene  = EmptyScene() # 나중에 진짜 기본 Scene (StartScene)으로 수정
-        self.scenes = {}
-    
+        self.current_scene  = StartScene()
+        self.scenes : dict[str, Scene]= {
+            "START_SCENE" : self.current_scene,
+            "GAME_SCENE" : GameScene(),
+            #"END_SCENE" : EndScene(),
+        }
+
+        self.set_subscription()
+
+    def set_subscription(self):
+        EventManager.subscribe("END_GAME", self.end_game)
+        EventManager.subscribe("CHANGE_SCENE", self.change_scene)
+
+    #region 기본 반복 코드
     def handle_event(self):
         pg_events = pygame.event.get()
         
         for event in pg_events:
             if event.type == pygame.QUIT:
-                self.is_running = False
+                self.end_game()
 
-        Input.update(pg_events)        
+        InputManager.update(pg_events)     
 
     def update(self):
         self.current_scene.update(self.dt)
@@ -52,3 +62,11 @@ class App():
 
         pygame.quit()
         sys.exit()
+    #endregion
+    #region 콜백 함수들
+    def end_game(self):
+        self.is_running = False
+    def change_scene(self, val):
+        if val in self.scenes.keys():
+            self.current_scene = self.scenes[val]
+    #endregion
