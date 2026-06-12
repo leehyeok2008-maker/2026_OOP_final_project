@@ -4,7 +4,8 @@ from scenes.scene import Scene
 from stages.stage1 import Stage1
 from stages.stage2 import Stage2
 #from stages.stage3 import Stage3
-from ui import UIManager, UIText
+from managers import UIManager
+from ui import UIText
 
 
 class GameScene(Scene):

@@ -1,7 +1,7 @@
 import pygame
 from pygame import Vector2
 from entities.entity import Entity
-from .collider import Collider, RectCollider, CircleCollider
+from physics import Collider, RectCollider, CircleCollider
 
 
 class ColliderManager:

@@ -2,8 +2,7 @@ import math
 import pygame
 from pygame import Surface
 from abc import ABC, abstractmethod
-from physics.transform import Transform
-from physics.collider import Collider
+from physics import Transform, Collider
 class Entity(ABC):
     def __init__(self, sprite : Surface, transform : Transform, collider : Collider):
         '''

@@ -1,7 +1,7 @@
 from pygame import Surface, Vector2
 from abc import ABC, abstractmethod
 from entities import *
-from physics import ColliderManager
+from managers import ColliderManager
 
 class Stage(ABC):
     def __init__(self, drone : Drone, cargo : Cargo, map):

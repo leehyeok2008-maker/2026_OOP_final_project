@@ -30,6 +30,12 @@ class RectCollider(Collider):
         h_y = self.height * math.cos(self.transform.angle) / 2
         return Vector2(h_x, h_y)
         
-        
+class CircleCollider(Collider):
+    def __init__(
+        self, radius: float,
+        transform: Transform, offset: Vector2 | None = None
+    ):
+        super().__init__(transform, offset)
+        self.radius = radius
 
     

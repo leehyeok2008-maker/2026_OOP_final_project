@@ -1,19 +1,17 @@
+from entities import *
 from pygame import Vector2
+from .stage import Stage
 import pygame
 
 
-class Stage2:
+class Stage2(Stage):
 
     def __init__(self):
 
-        # 드론
-        self.drone = Drone(
-            position=Vector2(100, 300)
-        )
-
-        # 화물
-        self.cargo = Cargo(
-            position=Vector2(400, 300)
+        super().__init__(
+            Drone(pygame.image.load("images/drone_temp.png"), 1.0, 1.0, position=pygame.Vector2(300, 300)),
+            Cargo(pygame.image.load("images/cargo.jpeg"), 1.0, 1.0, position=pygame.Vector2(300, 300)),
+            None,
         )
 
         # 목표지점

@@ -2,8 +2,8 @@ import sys
 import pygame
 from config import *
 from scenes import StartScene, GameScene, Scene
-from event_manager import EventManager
-from input_manager import InputManager
+from managers.event_manager import EventManager
+from managers.input_manager import InputManager
 
 class App():
     def __init__(self):
