@@ -1,5 +1,5 @@
 from pygame import Surface
-from .ui_object import UIObject
+from ui import UIObject
 class UIManager:
     '''
     UI 전반을 관리하는 클래스

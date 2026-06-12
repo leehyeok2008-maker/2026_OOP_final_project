@@ -6,8 +6,8 @@ class Stage1(Stage):
 
     def __init__(self):
         super().__init__(
-            Drone(),
-            Cargo(),
+            Drone(pygame.image.load("images/drone_temp.png"), 1.0, 1.0, position=pygame.Vector2(300, 300)),
+            Cargo(pygame.image.load("images/cargo.jpeg"), 1.0, 1.0, position=pygame.Vector2(300, 300)),
             None,
         )
 
@@ -17,7 +17,7 @@ class Stage1(Stage):
     def update(self, dt):
 
         super().update(dt)
-
+        '''
         if self.tutorial_step == 0:
 
             if self.drone.position.y < 300:
@@ -37,6 +37,7 @@ class Stage1(Stage):
 
             if self.goal_reached:
                 return "CLEAR"
+        '''
 
     def get_tutorial_text(self):
 

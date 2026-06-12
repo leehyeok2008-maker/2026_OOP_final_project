@@ -2,7 +2,7 @@ import pygame
 from pygame import Surface
 from pygame.font import Font
 from .ui_object import UIObject
-from input_manager import InputManager
+from managers.input_manager import InputManager
 
 
 class UIButton(UIObject):

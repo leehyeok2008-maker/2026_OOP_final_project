@@ -1,6 +1,6 @@
 import pygame
 from config import *
-from input_manager import InputManager
+from managers import InputManager
 from entities.drone import Drone
 from .controller import Controller
 

@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from entities.drone import Drone
+from entities import Drone
 
 class Controller(ABC):
     def __init__(self, drone : Drone):

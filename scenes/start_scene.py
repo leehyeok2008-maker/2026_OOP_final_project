@@ -3,10 +3,8 @@ import pygame
 from config import *
 from pygame import Surface
 from scenes.scene import Scene
-from ui.ui_manager import UIManager
-from ui.ui_text import UIText
-from ui.ui_button import UIButton
-from event_manager import EventManager
+from managers import UIManager, EventManager
+from ui import UIText, UIButton
 
 
 class StartScene(Scene):
