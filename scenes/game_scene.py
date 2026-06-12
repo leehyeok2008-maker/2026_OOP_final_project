@@ -31,7 +31,6 @@ class GameScene(Scene):
         #endregion
 
     def update(self, dt):
-
         self.current_stage.update(dt)
         self.ui_manager.update(dt)
         '''

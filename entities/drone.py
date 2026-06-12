@@ -5,11 +5,11 @@ from physics.transform import Transform
 from physics.collider import RectCollider
 class Drone(Entity):
     def __init__(
-        self, sprite : Surface, mass : float, moment : float, 
+        self, size : tuple[float, float], sprite : Surface, mass : float, moment : float, 
         position : Vector2 | None = None, velocity : Vector2 | None = None,
         angle : float = 0.0, angular_velocity : float = 0.0,
     ):  
-        transform = Transform(position or Vector2(0, 0), angle)
+        transform = Transform(position or Vector2(0, 0), angle, size)
         super().__init__(
             sprite=sprite,
             transform=transform,
@@ -62,13 +62,13 @@ class Drone(Entity):
     def update(self, dt):
         self.set_thrust(0.0, 0.0)
         for command in self.commands:
-            if command == "MOVE_UP": self.add_thrust(self.max_left_thrust, self.max_right_thrust)
-            if command == "MOVE_DOWN": self.add_thrust(0.0, 0.0)
-            if command == "MOVE_LEFT": self.add_thrust(0.0, self.max_right_thrust)
-            if command == "MOVE_RIGHT": self.add_thrust(self.max_left_thrust, 0.0)
+            if command == "MOVE_UP": self.rigidbody.apply_force(Vector2(0, 20), is_local=True)#self.add_thrust(self.max_left_thrust, self.max_right_thrust)
+            if command == "MOVE_DOWN": self.rigidbody.apply_force(Vector2(0, -20), is_local=True) #self.add_thrust(0.0, 0.0)
+            if command == "MOVE_LEFT": self.rigidbody.apply_force(Vector2(-20, 0), is_local=True) #self.add_thrust(0.0, self.max_right_thrust)
+            if command == "MOVE_RIGHT":  self.rigidbody.apply_force(Vector2(20, 0), is_local=True) #self.add_thrust(self.max_left_thrust, 0.0)
 
-        self.rigidbody.apply_force(Vector2(0.0, self.left_thrust), self.left_arm_position, is_local=True)
-        self.rigidbody.apply_force(Vector2(0.0, self.right_thrust), self.right_arm_position, is_local=True)
+        #self.rigidbody.apply_force(Vector2(0.0, -self.left_thrust), self.left_arm_position, is_local=True)
+        #self.rigidbody.apply_force(Vector2(0.0, -self.right_thrust), self.right_arm_position, is_local=True)
         self.rigidbody.update(dt)
         self.commands.clear()
     

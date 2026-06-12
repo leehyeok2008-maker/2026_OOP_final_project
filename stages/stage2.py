@@ -1,4 +1,5 @@
 from entities import *
+from controllers import ManualController
 from pygame import Vector2
 from .stage import Stage
 import pygame
@@ -8,11 +9,24 @@ class Stage2(Stage):
 
     def __init__(self):
 
-        super().__init__(
-            Drone(pygame.image.load("images/drone_temp.png"), 1.0, 1.0, position=pygame.Vector2(300, 300)),
-            Cargo(pygame.image.load("images/cargo.jpeg"), 1.0, 1.0, position=pygame.Vector2(300, 300)),
-            None,
+        self.drone = Drone((1.0, 1.0), pygame.image.load("images/drone_temp.png"), 10, 100, position=pygame.Vector2(3, 3))
+        self.cargo = Cargo((1.0, 1.0), pygame.image.load("images/cargo.jpeg"), 10, 100, position=pygame.Vector2(3, 3))
+        self.tile_map = TileMap(
+            grid=[
+                [0, 0, 0],
+                [0, 0, 0],
+                [0, 0, 0],
+            ],
+            tile_size=1.0,
+            tile_sprite=pygame.image.load("images/drone_temp.png")
         )
+        super().__init__(
+            drone=self.drone,
+            cargo=self.cargo,
+            map=self.tile_map,
+            controller=ManualController(self.drone),
+        )
+
 
         # 목표지점
         self.goal_pos = Vector2(800, 300)
@@ -81,7 +95,9 @@ class Stage2(Stage):
         return None
 
     def render(self, screen):
-
+        
+        super().render(screen)
+        
         # 목표 지점
         pygame.draw.circle(
             screen,
@@ -90,12 +106,6 @@ class Stage2(Stage):
             self.goal_radius,
             2
         )
-
-        # 드론
-        self.drone.render(screen)
-
-        # 화물
-        self.cargo.render(screen)
 
         # 목표 표시
         font = pygame.font.Font(None, 30)

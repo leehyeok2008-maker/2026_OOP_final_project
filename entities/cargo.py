@@ -6,11 +6,11 @@ from physics.collider import RectCollider
 
 class Cargo(Entity):
     def __init__(
-        self, sprite : Surface, mass : float, moment : float, 
+        self, size : tuple[float, float], sprite : Surface, mass : float, moment : float, 
         position : Vector2 | None = None, velocity : Vector2 | None = None,
         angle : float = 0.0, angular_velocity : float = 0.0
     ):
-        transform=Transform(position or Vector2(0, 0), angle)
+        transform=Transform(position or Vector2(0, 0), angle, size)
         super().__init__(
             sprite=sprite,
             transform=transform,

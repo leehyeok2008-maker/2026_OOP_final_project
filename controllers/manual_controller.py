@@ -9,7 +9,7 @@ class ManualController(Controller):
         super().__init__(drone)
 
     def command(self, input):
-        commands = [] 
+        commands = []
         if InputManager.is_key_down(pygame.K_a) or InputManager.is_key_down(pygame.K_LEFT):
             commands.append("MOVE_LEFT")
         if InputManager.is_key_down(pygame.K_d) or InputManager.is_key_down(pygame.K_RIGHT):

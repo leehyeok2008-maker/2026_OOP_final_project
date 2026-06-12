@@ -1,7 +1,7 @@
 import math
 from pygame import Vector2
 class Transform:
-    def __init__(self, position : Vector2 | None = None, angle : float = 0.0):
+    def __init__(self, position : Vector2 | None = None, angle : float = 0.0, size : tuple[float, float] = (1.0, 1.0)):
         '''
         2차원 물체의 절대 위치 및 자세 정보
         
@@ -11,10 +11,14 @@ class Transform:
 
             angle (float):
                 회전각(rad)
+
+            size (tuple[float, float]):
+                물체의 크기(m)
         '''
         
         self.position = Vector2(0, 0) if position is None else position
         self.angle = angle
+        self.size = size
 
     #region 내장 유틸리티 함수
     def transform_local_vector(self, vec : Vector2) -> Vector2:
