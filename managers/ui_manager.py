@@ -14,8 +14,8 @@ class UIManager:
         update(dt):
             UI 오브젝트 업데이트
     '''
-    def __init__(self, ui_objects : list[UIObject] = []):
-        self.ui_objects : list[UIObject] = ui_objects
+    def __init__(self, ui_objects : list[UIObject] | None = None):
+        self.ui_objects : list[UIObject] = ui_objects or []
 
     def add(self, ui_object : UIObject):
         if ui_object not in self.ui_objects:

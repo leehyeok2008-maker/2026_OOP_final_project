@@ -1,5 +1,7 @@
 import math
 import pygame
+from pygame import Vector2
+from utils import conversion
 from pygame import Surface
 from abc import ABC, abstractmethod
 from physics import Transform, Collider
@@ -30,8 +32,11 @@ class Entity(ABC):
     def on_collision(self, other):
         pass
 
-    def render(self, screen) -> None:
+    def render(self, screen : Surface, camera_pos : Vector2) -> None:
+        new_sprite = pygame.transform.scale(self.sprite, conversion.change_meter_to_px(self.transform.size))
         angle_deg = math.degrees(self.transform.angle)
-        rotated_sprite = pygame.transform.rotate(self.sprite, angle_deg)
-        rect = rotated_sprite.get_rect(center=self.transform.position)
+        rotated_sprite = pygame.transform.rotate(new_sprite, angle_deg)
+        rect = rotated_sprite.get_rect(
+            center=conversion.calculate_pos_on_screen(self.transform.position, camera_pos, screen)
+        )
         screen.blit(rotated_sprite, rect)

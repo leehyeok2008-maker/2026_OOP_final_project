@@ -1,14 +1,24 @@
 from .stage import Stage
 from entities import *
+from controllers import ManualController
 import pygame
+from utils import reader
 
 class Stage1(Stage):
 
     def __init__(self):
+        self.drone = Drone((1.0, 1.0), pygame.image.load("images/drone_temp.png"), 10, 100, position=pygame.Vector2(3, 3))
+        self.cargo = Cargo((1.0, 1.0), pygame.image.load("images/cargo.jpeg"), 10, 100, position=pygame.Vector2(3, 3))
+        self.tile_map = TileMap(
+            grid=reader.load_grid_from_file("stages/map1.txt"),
+            tile_size=1.0,
+            tile_sprite=pygame.image.load("images/drone_temp.png")
+        )
         super().__init__(
-            Drone(pygame.image.load("images/drone_temp.png"), 1.0, 1.0, position=pygame.Vector2(300, 300)),
-            Cargo(pygame.image.load("images/cargo.jpeg"), 1.0, 1.0, position=pygame.Vector2(300, 300)),
-            None,
+            drone=self.drone,
+            cargo=self.cargo,
+            map=self.tile_map,
+            controller=ManualController(self.drone),
         )
 
         self.tutorial_step = 0
