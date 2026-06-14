@@ -1,10 +1,10 @@
 import pygame
 from utils import conversion
-from .entity import Entity
+from .entity import StaticEntity
 from pygame import Surface, Vector2
 from physics import Transform, RectCollider
 
-class Tile(Entity):
+class Tile(StaticEntity):
     '''
     지형을 구성하는 타일
     '''
@@ -20,7 +20,7 @@ class Tile(Entity):
         pass
 
 class TileMap:
-    def __init__(self, grid, tile_size : float, tile_sprite : Surface):
+    def __init__(self, grid, tile_size : float, tile_sprites_dict : dict[int, Surface]):
         '''
         타일을 모아두는 클래스
 
@@ -37,7 +37,7 @@ class TileMap:
         self.grid = grid
         self.grid_size = len(grid), len(grid[0])
         self.tile_size = tile_size
-        self.tile_sprite = tile_sprite
+        self.tile_sprites_dict = tile_sprites_dict
         
         self.tiles_dict = {}
         self.build_map()
@@ -53,17 +53,22 @@ class TileMap:
         else: key = (first, second)
         
         return self.tiles_dict.get(key, None)
+    
+    def get_tiles(self) -> list[Tile]:
+        return list(self.tiles_dict.values())
 
         
     def build_map(self):
         for i in range(self.grid_size[0]):
             for j in range(self.grid_size[1]):
-                if self.grid[i][j] == 1:
+                tile_value = self.grid[i][j]
+                if tile_value != 0 and tile_value in self.tile_sprites_dict:
                     tile_position = Vector2(float(j), float(self.grid_size[0] - i - 1)) * self.tile_size
+                    sprite = self.tile_sprites_dict[tile_value]
                     self.tiles_dict[(i, j)] = Tile(
-                        self.tile_size, 
-                        self.tile_sprite, 
-                        tile_position
+                        size=self.tile_size, 
+                        sprite=sprite,
+                        position=tile_position
                     )
 
     def render(self, screen : Surface, camera_pos : Vector2):

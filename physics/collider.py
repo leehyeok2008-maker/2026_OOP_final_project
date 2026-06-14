@@ -21,15 +21,18 @@ class RectCollider(Collider):
 
     @property
     def width_vector(self) -> Vector2:
+        ''' 너비 절반 크기의 수직 벡터'''
         w_x = self.width * math.cos(self.transform.angle) / 2
         w_y = self.width * math.sin(self.transform.angle) / 2
         return Vector2(w_x, w_y)
     @property
     def height_vector(self) -> Vector2:
+        ''' 높이 절반 크기의 수직 벡터'''
         h_x = -self.height * math.sin(self.transform.angle) / 2
         h_y = self.height * math.cos(self.transform.angle) / 2
         return Vector2(h_x, h_y)
-        
+
+'''      
 class CircleCollider(Collider):
     def __init__(
         self, radius: float,
@@ -37,5 +40,5 @@ class CircleCollider(Collider):
     ):
         super().__init__(transform, offset)
         self.radius = radius
-
+'''
     

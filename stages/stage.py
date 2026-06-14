@@ -17,9 +17,12 @@ class Stage(ABC):
         self.collider_manager = ColliderManager()
         self.collider_manager.register(self.drone, self.drone.collider)
         self.collider_manager.register(self.cargo, self.cargo.collider)
+        self.collider_manager.register_all([(e, e.collider) for e in self.map.get_tiles()])
         self.camera_pos = conversion.change_px_to_meter(Vector2(WIDTH - DEFAULT_PX_PER_METER, HEIGHT - DEFAULT_PX_PER_METER))/2
 
     def update(self, dt : float):
+        #print(self.drone.rigidbody.velocity)
+        self.collider_manager.check_all()
         self.drone.rigidbody.apply_force(self.grav_acc)
         self.cargo.rigidbody.apply_force(self.grav_acc)
         self.drone.rigidbody.apply_force(-self.drone.rigidbody.velocity * self.air_resistance)
@@ -32,4 +35,3 @@ class Stage(ABC):
         self.drone.render(screen, self.camera_pos)
         self.cargo.render(screen, self.camera_pos)
         self.map.render(screen, self.camera_pos)
-        pass

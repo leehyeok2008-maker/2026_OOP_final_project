@@ -3,6 +3,7 @@ from controllers import ManualController
 from pygame import Vector2
 from .stage import Stage
 import pygame
+from utils import reader
 
 
 class Stage2(Stage):
@@ -12,13 +13,9 @@ class Stage2(Stage):
         self.drone = Drone((1.0, 1.0), pygame.image.load("images/drone_temp.png"), 10, 100, position=pygame.Vector2(3, 3))
         self.cargo = Cargo((1.0, 1.0), pygame.image.load("images/cargo.jpeg"), 10, 100, position=pygame.Vector2(3, 3))
         self.tile_map = TileMap(
-            grid=[
-                [0, 0, 0],
-                [0, 0, 0],
-                [0, 0, 0],
-            ],
+            grid=reader.load_grid_from_file("stages/map1.txt"),
             tile_size=1.0,
-            tile_sprite=pygame.image.load("images/drone_temp.png")
+            tile_sprites_dict={1: pygame.image.load("images/tile_images/row-1-column-2.png")}
         )
         super().__init__(
             drone=self.drone,
