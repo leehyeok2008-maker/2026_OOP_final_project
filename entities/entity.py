@@ -4,7 +4,7 @@ from pygame import Vector2
 from utils import conversion
 from pygame import Surface
 from abc import ABC, abstractmethod
-from physics import Transform, Collider
+from physics import Transform, Collider, RigidBody2D
 class Entity(ABC):
     def __init__(self, sprite : Surface, transform : Transform, collider : Collider):
         '''
@@ -23,9 +23,7 @@ class Entity(ABC):
         self.sprite = sprite
         self.transform = transform
         self.collider = collider
-        self.is_static = False
-        
-    @abstractmethod
+
     def update(self, dt) -> None:
         pass
 
@@ -40,3 +38,34 @@ class Entity(ABC):
             center=conversion.calculate_pos_on_screen(self.transform.position, camera_pos, screen)
         )
         screen.blit(rotated_sprite, rect)
+
+class StaticEntity(Entity):
+    """타일, 벽, 지형 등 움직이지 않는 객체"""
+    def __init__(self, sprite: Surface, transform: Transform, collider: Collider):
+        super().__init__(sprite, transform, collider)
+
+    def update(self, dt: float):
+        pass
+
+class DynamicEntity(Entity):
+    """드론, 플레이어, 적 등 물리 연산이 필요한 객체"""
+    def __init__(
+        self, 
+        sprite: Surface, 
+        transform: Transform, 
+        collider: Collider,
+        mass: float = 1.0,
+        moment: float | None = None, 
+        velocity : Vector2 | None = None,
+        angular_velocity : float = 0.0,
+    ):
+        super().__init__(sprite, transform, collider)
+        
+        if moment is None:
+            w, h = transform.size
+            moment = mass * (w**2 + h**2) / 12
+            
+        self.rigidbody = RigidBody2D(mass, moment, transform, velocity or Vector2(0, 0), angular_velocity)
+
+    def update(self, dt: float):
+        self.rigidbody.update(dt)

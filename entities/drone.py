@@ -1,21 +1,25 @@
 from pygame import Vector2, Surface
-from .entity import Entity
+from .entity import DynamicEntity
 from physics.rigidbody2d import RigidBody2D
 from physics.transform import Transform
 from physics.collider import RectCollider
-class Drone(Entity):
+class Drone(DynamicEntity):
     def __init__(
         self, size : tuple[float, float], sprite : Surface, mass : float, moment : float, 
         position : Vector2 | None = None, velocity : Vector2 | None = None,
         angle : float = 0.0, angular_velocity : float = 0.0,
+        collider_scale : tuple[float, float] = (1.0, 1.0)
     ):  
         transform = Transform(position or Vector2(0, 0), angle, size)
         super().__init__(
             sprite=sprite,
             transform=transform,
-            collider=RectCollider(50, 50,  transform)
+            collider=RectCollider(size[0] * collider_scale[0], size[1] * collider_scale[1],  transform),
+            mass=mass,
+            moment=moment,
+            velocity=velocity,
+            angular_velocity=angular_velocity,
         )
-        self.rigidbody = RigidBody2D(mass, moment, self.transform, velocity or Vector2(0, 0), angular_velocity)
         self.commands = []
 
         #region 드론 내부 변수

@@ -73,6 +73,7 @@ class RigidBody2D:
             self.velocity += self.transform.transform_local_vector(impulse / self.mass)
             if point is not None: self.angular_velocity += self.cross(point, impulse) / self.moment
         else:
+            print(impulse / self.mass)
             self.velocity += impulse / self.mass
             if point is not None: self.angular_velocity += self.cross(point - self.transform.position, impulse) / self.moment
     
