@@ -1,7 +1,7 @@
 import pygame
 from config import *
 from managers import InputManager
-from entities import Drone
+from entities import Drone, Cargo
 from .controller import Controller
 
 class ManualController(Controller):
@@ -23,13 +23,24 @@ class ManualController(Controller):
             left_input += self.drone.max_left_thrust * 0.5
 
         if InputManager.is_key_pressed(pygame.K_r):
-            self.drone.is_trying_to_hold = True
-        else:
-            self.drone.is_trying_to_hold = False
+            if self.drone.is_holding:
+                self.drone.is_holding = False
+            else:
+                for other in self.drone.collision_list:
+                    rope_length = float('inf')
+                    attached_cargo = None
+                    if isinstance(other, Cargo):
+                        distance = self.drone.anchor_point.distance_to(other.transform.position)
+                        if distance <= rope_length:
+                            self.drone.is_holding = True
+                            rope_length = distance
+                            attached_cargo = other
+                    self.drone.rope_length = rope_length
+                    self.drone.attached_cargo = attached_cargo
+                        
 
         if InputManager.is_key_down(pygame.K_e):
             self.drone.rope_length += self.drone.rope_speed * dt
-            print(self.drone.rope_length)
         
         if InputManager.is_key_down(pygame.K_q):
             self.drone.rope_length -= self.drone.rope_speed * dt
