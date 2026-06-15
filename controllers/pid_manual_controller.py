@@ -1,6 +1,8 @@
+import math
+import matplotlib.pyplot as plt
 from .controller import Controller
 from .pid_controller import PIDController
-from entities.drone import Drone
+from entities.drone import Drone, Cargo
 from managers import InputManager
 import pygame
 
@@ -8,63 +10,135 @@ class PIDManualController(Controller):
     def __init__(self, drone: Drone):
         super().__init__(drone)
         
-        self.pid_y = PIDController(kp=18.0, ki=4.0, kd=8.0)
-        self.pid_x = PIDController(kp=10.0, ki=1.0, kd=5.0)
+        self.pid_vx = PIDController(kp=150.0, ki=10.0, kd=10.0)
+        self.pid_vy = PIDController(kp=300.0, ki=10.0, kd=10.0)
+        self.pid_ang = PIDController(kp=100.0, ki=10.0, kd=5.0)
         
-        # 최초 시작 위치를 홀드 목표 지점으로 설정
-        self.target_x = self.drone.transform.position.x
-        self.target_y = self.drone.transform.position.y
-        
-        self.move_speed = 4.0 
+        self.speed_x = 3.5
+        self.speed_y = 3.5
 
-    def command(self, dt: float):
-        # 현재 드론의 상태 관측
-        current_pos = self.drone.transform.position
+        # --- Matplotlib 데이터 기록용 변수 ---
+        self.time_elapsed = 0.0
+        self.history_t = []
+        self.history_vx = []
+        self.history_target_vx = []
+        self.history_vy = []
+        self.history_target_vy = []
+        self.history_ang = []
+
+    def command(self, dt: float, **kwargs):
+        grav_acc = kwargs.get("grav_acc", 9.8)
         current_vel = self.drone.rigidbody.velocity
-        
-        # ----------------------------------------------------
-        # 1. 좌우(X축) 제어 로직: "누르면 이동, 떼면 그 자리 정지"
-        # ----------------------------------------------------
-        is_moving_x = False
-        target_vel_x = 0.0
+        current_ang = self.drone.transform.angle
 
+        max_left_thrust = self.drone.max_left_thrust
+        max_right_thrust = self.drone.max_right_thrust
+        max_angle = 0.6
+
+        target_vx = 0.0
+        target_vy = 0.0
+
+        # 입력 처리 (목표 속도 설정)
         if InputManager.is_key_down(pygame.K_a) or InputManager.is_key_down(pygame.K_LEFT):
-            target_vel_x = -self.move_speed
-            is_moving_x = True
+            target_vx = -self.speed_x
         elif InputManager.is_key_down(pygame.K_d) or InputManager.is_key_down(pygame.K_RIGHT):
-            target_vel_x = self.move_speed
-            is_moving_x = True
-
-        if is_moving_x:
-            # 💡 키를 누르고 있을 때: 현재 속도가 목표 속도가 되도록 P 제어로 밀어줌
-            # (이때는 위치 잠금을 해제하고 실시간으로 타겟 X를 현재 위치로 추적합니다)
-            out_x = (target_vel_x - current_vel.x) * 5.0 
-            self.target_x = current_pos.x  # 손 떼는 순간 그 자리에 멈추도록 동기화
-        else:
-            # 💡 키를 뗐을 때: 고정된 target_x를 유지하기 위해 PID 가동 (브레이크 및 위치 고정)
-            out_x = self.pid_x.compute(self.target_x, current_pos.x, dt)
-
-        # ----------------------------------------------------
-        # 2. 상하(Y축) 제어 로직: "기본적으로 고도 유지"
-        # ----------------------------------------------------
-        # (원하신다면 여기에 W/S 키로 target_y를 변환하는 코드를 넣으셔도 좋습니다)
+            target_vx = self.speed_x
+            
         if InputManager.is_key_down(pygame.K_w) or InputManager.is_key_down(pygame.K_UP):
-            self.target_y += self.move_speed * dt  # 꾹 누르면 목표 고도 상승
+            target_vy = self.speed_y
+        elif InputManager.is_key_down(pygame.K_s) or InputManager.is_key_down(pygame.K_DOWN):
+            target_vy = -self.speed_y
 
-        out_y = self.pid_y.compute(self.target_y, current_pos.y, dt)
+        # PID 제어 연산 (Cascade 구조)
+        out_vy = self.pid_vy.compute(target_vy, current_vel.y, dt)
+        base_thrust = self.drone.rigidbody.mass * grav_acc
+        cos_ang = max(math.cos(current_ang), 0.1)
+        total_thrust = (base_thrust + out_vy) / cos_ang
 
-        # ----------------------------------------------------
-        # 3. PID 출력값을 드론의 좌우 모터 추력(Thrust)으로 믹싱
-        # ----------------------------------------------------
-        # 드론 물리 공식:
-        # - 양쪽 모터를 같이 더하면(out_y) 위로 상승합니다.
-        # - 왼쪽 모터를 더하고 오른쪽을 빼면(out_x) 기체가 우측으로 기울며 회전/이동합니다.
-        
-        # 드론 기본 호버링에 필요한 기초 추력 (중력 상쇄용 베이스라인)
-        hover_thrust = (9.81 * self.drone.rigidbody.mass) / 2.0  # 한쪽 모터당 중력의 절반
-        
-        left_thrust = hover_thrust + out_y + out_x
-        right_thrust = hover_thrust + out_y - out_x
+        out_vx = self.pid_vx.compute(target_vx, current_vel.x, dt)
+        target_angle = -out_vx 
+        target_angle = max(-max_angle, min(max_angle, target_angle))
 
-        # 최종 연산된 힘을 드론에 주입
+        out_ang = self.pid_ang.compute(target_angle, current_ang, dt)
+
+        # 모터 출력 분배
+        left_thrust = (total_thrust / 2.0) - out_ang
+        right_thrust = (total_thrust / 2.0) + out_ang
+
+        left_thrust = max(0.0, min(max_left_thrust, left_thrust))
+        right_thrust = max(0.0, min(max_right_thrust, right_thrust))
+
         self.drone.set_thrust(left_thrust, right_thrust)
+
+        # --- 데이터 로깅 업데이트 ---
+        self.time_elapsed += dt
+        self.history_t.append(self.time_elapsed)
+        self.history_vx.append(current_vel.x)
+        self.history_target_vx.append(target_vx)
+        self.history_vy.append(current_vel.y)
+        self.history_target_vy.append(target_vy)
+        self.history_ang.append(math.degrees(current_ang))
+
+        # [그래프 출력 트리거] P 키를 누르면 그래프 창 생성
+        if InputManager.is_key_pressed(pygame.K_p):
+            self.show_plot()
+
+        #region 로프 액션
+        if InputManager.is_key_pressed(pygame.K_r):
+            if self.drone.is_holding:
+                self.drone.is_holding = False
+            else:
+                for other in self.drone.collision_list:
+                    rope_length = float('inf')
+                    attached_cargo = None
+                    if isinstance(other, Cargo):
+                        distance = self.drone.anchor_point.distance_to(other.transform.position)
+                        if distance <= rope_length:
+                            self.drone.is_holding = True
+                            rope_length = distance
+                            attached_cargo = other
+                    self.drone.rope_length = rope_length
+                    self.drone.attached_cargo = attached_cargo
+                        
+        if InputManager.is_key_down(pygame.K_e):
+            self.drone.rope_length += self.drone.rope_speed * dt
+        
+        if InputManager.is_key_down(pygame.K_q):
+            self.drone.rope_length -= self.drone.rope_speed * dt
+        #endregion
+
+    def show_plot(self):
+        """저장된 비행 데이터를 바탕으로 Matplotlib 그래프를 출력합니다."""
+        plt.figure(figsize=(10, 8))
+        plt.suptitle("Pygame Drone Velocity & Attitude Control", fontsize=16)
+
+        # 1. X축 속도 추종 그래프
+        plt.subplot(3, 1, 1)
+        plt.plot(self.history_t, self.history_target_vx, label="Target VX (Input)", linestyle='--', color='red')
+        plt.plot(self.history_t, self.history_vx, label="Current VX", color='blue')
+        plt.title("X Velocity Control (Left/Right)")
+        plt.ylabel("Velocity")
+        plt.grid(True)
+        plt.legend()
+
+        # 2. Y축 속도 추종 그래프
+        plt.subplot(3, 1, 2)
+        plt.plot(self.history_t, self.history_target_vy, label="Target VY (Input)", linestyle='--', color='red')
+        plt.plot(self.history_t, self.history_vy, label="Current VY", color='green')
+        plt.title("Y Velocity Control (Up/Down)")
+        plt.ylabel("Velocity")
+        plt.grid(True)
+        plt.legend()
+
+        # 3. 드론 자세(기울기) 그래프
+        plt.subplot(3, 1, 3)
+        plt.plot(self.history_t, self.history_ang, label="Pitch Angle (deg)", color='orange')
+        plt.axhline(0, color='gray', linestyle='--')
+        plt.title("Drone Pitch Angle")
+        plt.xlabel("Time (s)")
+        plt.ylabel("Angle (degrees)")
+        plt.grid(True)
+        plt.legend()
+
+        plt.tight_layout()
+        plt.show()

@@ -18,7 +18,7 @@ class Stage1(Stage):
             drone=self.drone,
             cargo=self.cargo,
             map=self.tile_map,
-            controller=ManualController(self.drone),
+            controller=PIDManualController(self.drone),
         )
 
         self.tutorial_step = 0
