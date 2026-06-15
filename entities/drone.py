@@ -1,5 +1,6 @@
 from pygame import Vector2, Surface
 from .entity import DynamicEntity
+from .cargo import Cargo
 from physics.rigidbody2d import RigidBody2D
 from physics.transform import Transform
 from physics.collider import RectCollider
@@ -22,6 +23,13 @@ class Drone(DynamicEntity):
         )
 
         #region 드론 내부 변수
+        self.is_holding = False
+        self.is_trying_to_hold = False
+        self.attached_cargo : None | Cargo= None
+        self.rope_anchor_offset = Vector2(0.0, -size[1] / 2)
+        self.max_rope_length = 0.6
+        self.__rope_length = 0.1
+
         self.max_left_thrust = 11.0
         self.max_right_thrust = 11.0
         self.__left_thrust = 0.0
@@ -58,6 +66,19 @@ class Drone(DynamicEntity):
     def right_velocity(self):
         return self.rigidbody.velocity + RigidBody2D.cross(self.rigidbody.angular_velocity, self.transform.transform_local_vector(self.right_arm_position))
 
+    @property
+    def rope_length(self):
+        return self.__rope_length
+    
+    @property
+    def anchor_point(self):
+        return self.transform.transform_local_position(self.rope_anchor_offset)
+    
+    @rope_length.setter
+    def rope_length(self, val):
+        if isinstance(val, float):
+            self.__rope_length = min(self.max_rope_length, max(0.1, val))
+
     def set_thrust(self, left_thrust : float, right_thrust : float):
         self.left_thrust = left_thrust
         self.right_thrust = right_thrust
@@ -77,6 +98,20 @@ class Drone(DynamicEntity):
         self.rigidbody.apply_force(Vector2(0.0, self.right_thrust), self.right_arm_position, is_local=True)
 
         self.rigidbody.update(dt)
+
+    def on_collision(self, other):
+        if self.is_holding and self.is_trying_to_hold:
+            self.is_holding = False
+            self.attached_cargo = None
+
+        if isinstance(other, Cargo) and self.is_trying_to_hold:
+            if not self.is_holding:
+                self.is_holding = True
+                self.attached_cargo = other
+                self.rope_length = 0.2
+            
+            
+            
     
 
 

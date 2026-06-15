@@ -22,5 +22,10 @@ class ManualController(Controller):
         if InputManager.is_key_down(pygame.K_d) or InputManager.is_key_down(pygame.K_RIGHT):
             left_input += self.drone.max_left_thrust * 0.3
 
+        if InputManager.is_key_pressed(pygame.K_r):
+            self.drone.is_trying_to_hold = True
+        else:
+            self.drone.is_trying_to_hold = False
+
         self.drone.set_thrust(left_input, right_input)
         

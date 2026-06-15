@@ -31,6 +31,8 @@ class Stage(ABC):
         self.drone.update(dt)
         self.cargo.update(dt)
 
+        to_cargo = self.cargo.transform.position - self.drone.anchor_point
+
     def render(self, screen : Surface):
         self.drone.render(screen, self.camera_pos)
         self.cargo.render(screen, self.camera_pos)
