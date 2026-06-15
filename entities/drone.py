@@ -26,9 +26,11 @@ class Drone(DynamicEntity):
         self.is_holding = False
         self.is_trying_to_hold = False
         self.attached_cargo : None | Cargo= None
-        self.rope_anchor_offset = Vector2(0.0, -size[1] / 2)
-        self.max_rope_length = 0.6
-        self.__rope_length = 0.1
+        self.rope_anchor_offset = Vector2(0.0, -size[1] * collider_scale[1] / 2)
+        self.rope_speed = 1.0
+        self.min_rope_length = size[1] * collider_scale[1]
+        self.max_rope_length = 5.0
+        self.__rope_length = self.min_rope_length
 
         self.max_left_thrust = 11.0
         self.max_right_thrust = 11.0
@@ -77,7 +79,7 @@ class Drone(DynamicEntity):
     @rope_length.setter
     def rope_length(self, val):
         if isinstance(val, float):
-            self.__rope_length = min(self.max_rope_length, max(0.1, val))
+            self.__rope_length = min(self.max_rope_length, max(self.min_rope_length, val))
 
     def set_thrust(self, left_thrust : float, right_thrust : float):
         self.left_thrust = left_thrust
@@ -108,7 +110,7 @@ class Drone(DynamicEntity):
             if not self.is_holding:
                 self.is_holding = True
                 self.attached_cargo = other
-                self.rope_length = 0.2
+                self.rope_length = self.anchor_point.distance_to(other.transform.position)
             
             
             
