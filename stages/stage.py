@@ -23,11 +23,11 @@ class Stage(ABC):
     def update(self, dt : float):
         #print(self.drone.rigidbody.velocity)
         self.collider_manager.check_all()
-        self.drone.rigidbody.apply_force(self.grav_acc)
-        self.cargo.rigidbody.apply_force(self.grav_acc)
-        self.drone.rigidbody.apply_force(-self.drone.rigidbody.velocity * self.air_resistance)
-        self.cargo.rigidbody.apply_force(-self.cargo.rigidbody.velocity * self.air_resistance)
-        self.controller.command(None)
+        self.drone.rigidbody.apply_force(self.drone.rigidbody.mass * self.grav_acc)
+        self.cargo.rigidbody.apply_force(self.drone.rigidbody.mass * self.grav_acc)
+        self.drone.rigidbody.apply_force(-self.drone.left_velocity *  self.air_resistance)
+        self.cargo.rigidbody.apply_force(-self.drone.right_velocity * self.air_resistance)
+        self.controller.command(dt)
         self.drone.update(dt)
         self.cargo.update(dt)
 

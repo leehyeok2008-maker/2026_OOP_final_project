@@ -6,7 +6,7 @@ class Controller(ABC):
         self.drone : Drone = drone
         
     @abstractmethod
-    def command(self, input):
+    def command(self, dt : float, **kwargs) -> None:
         pass
 
     def __call__(self, input):

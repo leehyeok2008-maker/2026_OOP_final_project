@@ -1,9 +1,10 @@
+from typing import overload
 from pygame import Vector2
 from .transform import Transform
 
 class RigidBody2D:
     def __init__(
-            self, mass : float, moment : float, transform : Transform,
+            self, transform : Transform, mass : float, moment : float | None = None,
             velocity : Vector2 | None = None, angular_velocity : float = 0.0
         ):
         '''
@@ -25,13 +26,17 @@ class RigidBody2D:
             angular_velocity (float):
                 각속도(rad/s)
         '''
+        
+        if moment is None:
+            w, h = transform.size
+            moment = mass * (w**2 + h**2) / 12
 
         if mass <= 0:
             raise ValueError("Mass must be positive.")
         
         if moment <= 0:
             raise ValueError("Moment must be positive.")
-
+        
         self.mass = mass
         self.moment = moment
 
@@ -43,12 +48,39 @@ class RigidBody2D:
         self.angular_velocity = angular_velocity
         self.torque = 0.0
 
+    #region 유틸리티
+    @overload
     @staticmethod
-    def cross(vec1 : Vector2, vec2 : Vector2) -> float:
+    def cross(a : Vector2, b : Vector2) -> float: ...
+    @overload
+    @staticmethod
+    def cross(a : float, b : Vector2) -> Vector2: ...
+    @overload
+    @staticmethod
+    def cross(a : Vector2, b : float) -> Vector2: ...
+    @staticmethod
+    def cross(a : Vector2 | float, b : Vector2 | float) -> float | Vector2:
         '''
-        2차원 벡터의 외적 연산
+        2차원 벡터 공간에서의 외적(Cross Product) 연산
+        
+        1. 벡터 × 벡터 -> float (z축 성분 스칼라)
+        2. 실수(z축) × 벡터 -> Vector2 (xy평면 벡터)
+        3. 벡터 × 실수(z축) -> Vector2 (xy평면 벡터)
         '''
-        return vec1.x * vec2.y - vec1.y * vec2.x
+        # 벡터 × 벡터
+        if isinstance(a, Vector2) and isinstance(b, Vector2):
+            return a.x * b.y - a.y * b.x
+        
+        # 실수(z축) × 벡터
+        if isinstance(a, (float, int)) and isinstance(b, Vector2):
+            return Vector2(-a * b.y, a * b.x)
+        
+        # 벡터 × 실수(z축)
+        if isinstance(a, Vector2) and isinstance(b, (float, int)):
+            return Vector2(b * a.y, -b * a.x)
+        
+        raise TypeError("외적 연산이 지원되지 않는 타입 조합입니다.")
+    #endregion
 
     def apply_force(self, force : Vector2, point : Vector2 | None = None, is_local : bool = False):
         '''
