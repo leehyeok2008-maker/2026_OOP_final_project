@@ -31,9 +31,12 @@ class Entity(ABC):
         pass
 
     def render(self, screen : Surface, camera_pos : Vector2) -> None:
-        new_sprite = pygame.transform.scale(self.sprite, conversion.change_meter_to_px(self.transform.size))
+        px_size = conversion.change_meter_to_px(self.transform.size)
+        scaled_sprite = pygame.transform.scale(self.sprite, px_size)
+        scaled_sprite = scaled_sprite.convert_alpha()
         angle_deg = math.degrees(self.transform.angle)
-        rotated_sprite = pygame.transform.rotate(new_sprite, angle_deg)
+        rotated_sprite = pygame.transform.rotate(scaled_sprite, angle_deg)
+        rotated_sprite.set_colorkey((0, 0, 0))
         rect = rotated_sprite.get_rect(
             center=conversion.calculate_pos_on_screen(self.transform.position, camera_pos, screen)
         )
@@ -54,18 +57,14 @@ class DynamicEntity(Entity):
         sprite: Surface, 
         transform: Transform, 
         collider: Collider,
-        mass: float = 1.0,
+        mass: float,
         moment: float | None = None, 
         velocity : Vector2 | None = None,
         angular_velocity : float = 0.0,
     ):
         super().__init__(sprite, transform, collider)
-        
-        if moment is None:
-            w, h = transform.size
-            moment = mass * (w**2 + h**2) / 12
             
-        self.rigidbody = RigidBody2D(mass, moment, transform, velocity or Vector2(0, 0), angular_velocity)
+        self.rigidbody = RigidBody2D(transform, mass, moment, velocity or Vector2(0, 0), angular_velocity)
 
     def update(self, dt: float):
         self.rigidbody.update(dt)

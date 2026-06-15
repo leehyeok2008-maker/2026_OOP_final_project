@@ -6,7 +6,7 @@ from physics.collider import RectCollider
 
 class Cargo(DynamicEntity):
     def __init__(
-        self, size : tuple[float, float], sprite : Surface, mass : float, moment : float, 
+        self, size : tuple[float, float], sprite : Surface, mass : float = 1.0, moment : float | None = None, 
         position : Vector2 | None = None, velocity : Vector2 | None = None,
         angle : float = 0.0, angular_velocity : float = 0.0
     ):
@@ -22,5 +22,8 @@ class Cargo(DynamicEntity):
         )
 
     def update(self, dt):
+        #공기저항
+        self.rigidbody.velocity *= 0.97
+        self.rigidbody.angular_velocity *= 0.95
         self.rigidbody.update(dt)
         

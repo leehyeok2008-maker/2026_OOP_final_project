@@ -169,8 +169,8 @@ class ColliderManager:
         r_a = contact - ea.transform.position
         r_b = contact - eb.transform.position
 
-        vel_a = ea.rigidbody.velocity + Vector2(-ea.rigidbody.angular_velocity * r_a.y, ea.rigidbody.angular_velocity * r_a.x) if is_ea_dynamic else Vector2(0, 0)
-        vel_b = eb.rigidbody.velocity + Vector2(-eb.rigidbody.angular_velocity * r_b.y, eb.rigidbody.angular_velocity * r_b.x) if is_eb_dynamic else Vector2(0, 0)
+        vel_a = ea.rigidbody.velocity + RigidBody2D.cross(ea.rigidbody.angular_velocity, r_a) if is_ea_dynamic else Vector2(0, 0)
+        vel_b = eb.rigidbody.velocity + RigidBody2D.cross(eb.rigidbody.angular_velocity, r_b) if is_eb_dynamic else Vector2(0, 0)
         
         relative_velocity = vel_b - vel_a
         vel_along_normal = relative_velocity.dot(normal)
@@ -186,11 +186,9 @@ class ColliderManager:
         inv_inertia_a = (1.0 / ea.rigidbody.moment) if (is_ea_dynamic and ea.rigidbody.moment > 0) else 0.0
         inv_inertia_b = (1.0 / eb.rigidbody.moment) if (is_eb_dynamic and eb.rigidbody.moment > 0) else 0.0
 
-        # RigidBody2D.cross 정적 메서드를 활용한 r × n 계산
         r_a_cross_n = RigidBody2D.cross(r_a, normal)
         r_b_cross_n = RigidBody2D.cross(r_b, normal)
 
-        # 6. 분모항 계산 (선속도 분모 + 각속도 분모)
         denominator = inv_mass_a + inv_mass_b
         denominator += (r_a_cross_n ** 2) * inv_inertia_a
         denominator += (r_b_cross_n ** 2) * inv_inertia_b

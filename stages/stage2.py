@@ -10,8 +10,8 @@ class Stage2(Stage):
 
     def __init__(self):
 
-        self.drone = Drone((1.0, 1.0), pygame.image.load("images/drone_temp.png"), 10, 100, position=pygame.Vector2(3, 3))
-        self.cargo = Cargo((1.0, 1.0), pygame.image.load("images/cargo.jpeg"), 10, 100, position=pygame.Vector2(3, 3))
+        self.drone = Drone((1.0, 1.0), pygame.image.load("images/drone_temp.png"), 1, position=pygame.Vector2(3, 3))
+        self.cargo = Cargo((1.0, 1.0), pygame.image.load("images/cargo.jpeg"), 1, position=pygame.Vector2(5, 6))
         self.tile_map = TileMap(
             grid=reader.load_grid_from_file("stages/map1.txt"),
             tile_size=1.0,
