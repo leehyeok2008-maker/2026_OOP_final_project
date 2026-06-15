@@ -38,10 +38,11 @@ class StartScene(Scene):
         self.description_text = UIText(
                 0,
                 0,
-                "시작하기 버튼을 클릭하세요.",
+                "클릭",
                 info_font,
                 (180, 180, 180)
             )
+
         self.description_text.center = (WIDTH//2, HEIGHT//2 + 200)
 
         self.ui_manager.set([
