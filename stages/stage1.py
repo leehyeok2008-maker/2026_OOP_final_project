@@ -7,18 +7,20 @@ from utils import reader
 class Stage1(Stage):
 
     def __init__(self):
-        self.drone = Drone((2.0, 2.0), pygame.image.load("images/drone.jpg"), 1, position=pygame.Vector2(3, 3), collider_scale=(0.8, 0.4))
-        self.cargo = Cargo((1.0, 1.0), pygame.image.load("images/cargo.jpeg"), 1, position=pygame.Vector2(5, 6))
-        self.tile_map = TileMap(
+        drone = Drone((2.0, 2.0), pygame.image.load("images/drone.jpg"), 1, position=pygame.Vector2(3, 3), collider_scale=(0.8, 0.4))
+        cargo = Cargo((1.0, 1.0), pygame.image.load("images/cargo.jpeg"), 1, position=pygame.Vector2(3, 1))
+        tile_map = TileMap(
             grid=reader.load_grid_from_file("stages/map1.txt"),
             tile_size=1.0,
             tile_sprites_dict={1: pygame.image.load("images/tile_images/row-1-column-2.png")}
         )
+        goal = Goal((1.0, 1.0), pygame.image.load("images/drone.jpg"), 1, position=pygame.Vector2(2, 3))
         super().__init__(
-            drone=self.drone,
-            cargo=self.cargo,
-            map=self.tile_map,
-            controller=PIDManualController(self.drone),
+            drone=drone,
+            cargo=cargo,
+            map=tile_map,
+            controller=ManualController(drone),
+            goal=goal,
         )
 
         self.tutorial_step = 0
