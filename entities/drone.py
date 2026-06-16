@@ -11,7 +11,7 @@ class Drone(DynamicEntity):
         angle : float = 0.0, angular_velocity : float = 0.0,
         collider_scale : tuple[float, float] = (1.0, 1.0)
     ):  
-        transform = Transform(position or Vector2(0, 0), angle, size)
+        transform = Transform(position, angle, size)
         super().__init__(
             sprite=sprite,
             transform=transform,

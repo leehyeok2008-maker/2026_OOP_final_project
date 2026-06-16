@@ -143,6 +143,9 @@ class ColliderManager:
 
     #region 충돌 반응
     def handle_collision_response(self, ea : Entity, eb : Entity, collision_info : dict):
+        if not ea.has_physics or not eb.has_physics:
+            return
+
         is_ea_dynamic = isinstance(ea, DynamicEntity)
         is_eb_dynamic = isinstance(eb, DynamicEntity)
 

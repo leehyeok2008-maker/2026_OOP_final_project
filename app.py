@@ -1,7 +1,7 @@
 import sys
 import pygame
 from config import *
-from scenes import StartScene, GameScene, Scene
+from scenes import StartScene, GameScene, EndScene, Scene
 from managers.event_manager import EventManager
 from managers.input_manager import InputManager
 
@@ -22,12 +22,12 @@ class App():
         self.dt = 0.0
 
         self.is_running = True
-        self.current_scene  = StartScene()
         self.scenes : dict[str, Scene]= {
-            "START_SCENE" : self.current_scene,
+            "START_SCENE" : StartScene(),
             "GAME_SCENE" : GameScene(),
-            #"END_SCENE" : EndScene(),
+            "END_SCENE" : EndScene(),
         }
+        self.current_scene = self.scenes["START_SCENE"]
 
         self.set_subscription()
 

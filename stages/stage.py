@@ -5,24 +5,38 @@ from utils import conversion
 from pygame import Surface, Vector2
 from abc import ABC, abstractmethod
 from controllers import Controller
-from managers import ColliderManager
+from managers import ColliderManager, EventManager
 
 class Stage(ABC):
-    def __init__(self, drone : Drone, cargo : Cargo, map : TileMap, controller : Controller):
+    def __init__(self, drone : Drone, cargo : Cargo, map : TileMap, controller : Controller, goal : Goal):
         self.drone = drone
         self.cargo = cargo
         self.map = map
         self.controller = controller
+        self.goal = goal
         self.grav_acc = Vector2(0, -9.8)
         self.air_resistance = 0.05
         self.collider_manager = ColliderManager()
         self.collider_manager.register(self.drone, self.drone.collider)
         self.collider_manager.register(self.cargo, self.cargo.collider)
+        self.collider_manager.register(self.goal, self.goal.collider)
         self.collider_manager.register_all([(e, e.collider) for e in self.map.get_tiles()])
         self.camera_pos = conversion.change_px_to_meter(Vector2(WIDTH - DEFAULT_PX_PER_METER, HEIGHT - DEFAULT_PX_PER_METER))/2
 
     def update(self, dt : float):
+        # 충돌 감지
         self.collider_manager.check_all()
+
+        # 정보 전송
+        EventManager.publish("COLLECT_INFO", {
+            "displacement" : self.drone.rigidbody.velocity.length() * dt,
+            "collision_time" : dt if any(isinstance(c, Tile) for c in self.drone.collision_list) else 0.0,
+            "energy_used" : 
+            self.drone.transform.transform_absolute_vector(self.drone.left_velocity).dot(Vector2(0.0, 1.0)) * self.drone.left_thrust \
+            + self.drone.transform.transform_absolute_vector(self.drone.right_velocity).dot(Vector2(0.0, 1.0)) * self.drone.right_thrust 
+        })
+        
+        # 역학 계산
         self.drone.rigidbody.apply_force(self.drone.rigidbody.mass * self.grav_acc)
         self.cargo.rigidbody.apply_force(self.drone.rigidbody.mass * self.grav_acc)
         self.drone.rigidbody.apply_force(-self.drone.left_velocity *  self.air_resistance)
@@ -37,6 +51,7 @@ class Stage(ABC):
         self.drone.render(screen, self.camera_pos)
         self.cargo.render(screen, self.camera_pos)
         self.map.render(screen, self.camera_pos)
+        self.goal.render(screen, self.camera_pos)
         self.render_rope(screen, self.camera_pos)
 
     #region rope 코드

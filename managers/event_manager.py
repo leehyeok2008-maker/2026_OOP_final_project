@@ -21,7 +21,7 @@ class EventManager:
 
     @classmethod
     def publish(cls, event_type : str, data : Any = None):
-        print(f"{event_type}: {data} -> {len(cls._listeners.get(event_type, []))}")
+        #print(f"{event_type}: {data} -> {len(cls._listeners.get(event_type, []))}")
         for callback in cls._listeners.get(event_type, []):
             callback(data)
 

@@ -9,28 +9,28 @@ from utils import reader
 class Stage2(Stage):
 
     def __init__(self):
-
-        self.drone = Drone((1.0, 1.0), pygame.image.load("images/drone_temp.png"), 1, position=pygame.Vector2(3, 3))
-        self.cargo = Cargo((1.0, 1.0), pygame.image.load("images/cargo.jpeg"), 1, position=pygame.Vector2(5, 6))
-        self.tile_map = TileMap(
+        drone = Drone((2.0, 2.0), pygame.image.load("images/drone.jpg"), 1, position=pygame.Vector2(3, 3), collider_scale=(0.8, 0.4))
+        cargo = Cargo((1.0, 1.0), pygame.image.load("images/cargo.jpeg"), 1, position=pygame.Vector2(3, 1))
+        tile_map = TileMap(
             grid=reader.load_grid_from_file("stages/map1.txt"),
             tile_size=1.0,
             tile_sprites_dict={1: pygame.image.load("images/tile_images/row-1-column-2.png")}
         )
+        goal = Goal((1.0, 1.0), pygame.image.load("images/drone.jpg"), 2, position=pygame.Vector2(2, 3))
         super().__init__(
-            drone=self.drone,
-            cargo=self.cargo,
-            map=self.tile_map,
-            controller=ManualController(self.drone),
+            drone=drone,
+            cargo=cargo,
+            map=tile_map,
+            controller=ManualController(drone),
+            goal=goal,
         )
-
 
         # 목표지점
         self.goal_pos = Vector2(800, 300)
         self.goal_radius = 30
 
         # 강풍
-        self.wind_force = Vector2(200, 0)
+        self.wind_force = Vector2(1, 0)
 
         # 상태
         self.cargo_attached = False
@@ -62,20 +62,7 @@ class Stage2(Stage):
             self.wind_force
         )
 
-        # 드론 업데이트
-        self.drone.update(dt)
-
-        # 화물 연결 상태
-        if self.cargo_attached:
-
-            self.cargo.rigidbody.transform.position = (
-                self.drone.rigidbody.transform.position
-                + Vector2(0, 40)
-            )
-
-        else:
-
-            self.cargo.update(dt)
+        super().update(dt)
 
         # 안내문 타이머
         if self.message_timer > 0:

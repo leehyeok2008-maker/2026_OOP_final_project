@@ -8,9 +8,10 @@ class Cargo(DynamicEntity):
     def __init__(
         self, size : tuple[float, float], sprite : Surface, mass : float = 1.0, moment : float | None = None, 
         position : Vector2 | None = None, velocity : Vector2 | None = None,
-        angle : float = 0.0, angular_velocity : float = 0.0
+        angle : float = 0.0, angular_velocity : float = 0.0,
+        collider_scale : tuple[float, float] = (1.0, 1.0)
     ):
-        transform=Transform(position or Vector2(0, 0), angle, size)
+        transform=Transform(position, angle, size)
         super().__init__(
             sprite=sprite,
             transform=transform,
