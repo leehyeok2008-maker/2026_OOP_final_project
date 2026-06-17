@@ -9,14 +9,14 @@ from config import DEFAULT_TILE_TYPE
 class Stage1(Stage):
 
     def __init__(self):
-        drone = Drone((2.0, 2.0), pygame.image.load("images/drone.jpg"), 1, position=pygame.Vector2(3, 3), collider_scale=(0.8, 0.4))
-        cargo = Cargo((1.0, 1.0), pygame.image.load("images/cargo.jpeg"), 1, position=pygame.Vector2(3, 1))
+        drone = Drone((2.0, 2.0), reader.load_image_from_file("images/drone.jpg"), 1, position=pygame.Vector2(3, 3), collider_scale=(0.8, 0.4))
+        cargo = Cargo((1.0, 1.0), reader.load_image_from_file("images/cargo.jpeg"), 1, position=pygame.Vector2(3, 1))
         tile_map = TileMap(
             grid=reader.load_grid_from_file("stages/map1.txt"),
             tile_size=1.0,
             tile_types=DEFAULT_TILE_TYPE  # tile_sprites_dict에서 tile_types로 매개변수 교체
         )
-        goal = Goal((1.0, 1.0), pygame.image.load("images/drone.jpg"), 1, position=pygame.Vector2(2, 3))
+        goal = Goal((1.0, 1.0), reader.load_image_from_file("images/drone.jpg"), 1, position=pygame.Vector2(2, 3))
         super().__init__(
             drone=drone,
             cargo=cargo,

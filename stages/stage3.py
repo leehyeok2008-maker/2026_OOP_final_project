@@ -17,7 +17,7 @@ class Stage3(Stage):
             tile_size=1.0,
             tile_types=DEFAULT_TILE_TYPE  # tile_sprites_dict에서 tile_types로 매개변수 교체
         )
-        goal = Goal((1.0, 1.0), reader.load_image_from_file("images/drone.jpg"), 1, position=pygame.Vector2(2, 3))
+        goal = Goal((1.0, 1.0), pygame.image.load("images/drone.jpg"), 3, position=pygame.Vector2(2, 3))
         super().__init__(
             drone=drone,
             cargo=cargo,
@@ -95,23 +95,6 @@ class Stage3(Stage):
             self.goal_pos,
             self.goal_radius,
             2
-        )
-
-        # 목표 표시
-        font = pygame.font.Font(None, 30)
-
-        text = font.render(
-            "GOAL",
-            True,
-            (0, 255, 0)
-        )
-
-        screen.blit(
-            text,
-            (
-                self.goal_pos.x - 20,
-                self.goal_pos.y - 50
-            )
         )
 
         # 튜토리얼 문구
