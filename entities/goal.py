@@ -16,7 +16,7 @@ class Goal(StaticEntity):
             transform=transform,
             collider=RectCollider(size[0] * collider_scale[0], size[1] * collider_scale[1], transform)
         )
-        self.has_physics = False
+        self.is_solid = False
         self.stage_num = stage_num
     
     def on_collision(self, other):
