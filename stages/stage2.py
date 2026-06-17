@@ -1,9 +1,10 @@
-from entities import *
-from controllers import ManualController
-from pygame import Vector2
 from .stage import Stage
+from entities import *
+from controllers import ManualController ,PIDManualController
 import pygame
+from pygame import Vector2
 from utils import reader
+from config import DEFAULT_TILE_TYPE
 
 
 class Stage2(Stage):
@@ -14,13 +15,13 @@ class Stage2(Stage):
         tile_map = TileMap(
             grid=reader.load_grid_from_file("stages/map1.txt"),
             tile_size=1.0,
-            tile_sprites_dict={1: pygame.image.load("images/tile_images/row-1-column-2.png")}
+            tile_types=DEFAULT_TILE_TYPE  # tile_sprites_dict에서 tile_types로 매개변수 교체
         )
         goal = Goal((1.0, 1.0), pygame.image.load("images/drone.jpg"), 2, position=pygame.Vector2(2, 3))
         super().__init__(
             drone=drone,
             cargo=cargo,
-            map=tile_map,
+            tile_map=tile_map,
             controller=ManualController(drone),
             goal=goal,
         )

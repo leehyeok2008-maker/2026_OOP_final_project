@@ -1,4 +1,6 @@
 import pygame
+from data import TileType
+from config import DEFAULT_IMAGE
 from utils import conversion
 from .entity import StaticEntity
 from pygame import Surface, Vector2
@@ -20,58 +22,26 @@ class Tile(StaticEntity):
         pass
 
 class TileMap:
-    def __init__(self, grid, tile_size : float, tile_sprites_dict : dict[int, Surface]):
-        '''
-        타일을 모아두는 클래스
-
-        Attributes:
-            grid (2차원 배열):
-                ij 인덱싱 글리드
-            grid_size (tuple[float, float]):
-                2차원 배열의 모양
-            tile_size (float):
-                타일 크기(m)
-            tile_sprite (Surface):
-                타일 이미지
-        '''
+    def __init__(self, grid, tile_size : float, tile_types : dict[int, TileType]):
         self.grid = grid
         self.grid_size = len(grid), len(grid[0])
         self.tile_size = tile_size
-        self.tile_sprites_dict = tile_sprites_dict
-        
-        self.tiles_dict = {}
-        self.build_map()
+        self.tile_types = tile_types
     
-    
-    def get_tile(self, first : int, second : int, indexing="ij") -> Tile | None:
-        '''
-        해당 위치의 타일을 반환하는 함수
-        indexing == "ij": ij 인덱싱
-        indexing == "xy": xy 인덱싱
-        '''
-        if indexing == "xy": key = (self.grid_size[0] - second - 1, first)
-        else: key = (first, second)
-        
-        return self.tiles_dict.get(key, None)
-    
-    def get_tiles(self) -> list[Tile]:
-        return list(self.tiles_dict.values())
-
-        
-    def build_map(self):
-        for i in range(self.grid_size[0]):
-            for j in range(self.grid_size[1]):
-                tile_value = self.grid[i][j]
-                if tile_value != 0 and tile_value in self.tile_sprites_dict:
-                    tile_position = Vector2(float(j), float(self.grid_size[0] - i - 1)) * self.tile_size
-                    sprite = self.tile_sprites_dict[tile_value]
-                    self.tiles_dict[(i, j)] = Tile(
-                        size=self.tile_size, 
-                        sprite=sprite,
-                        position=tile_position
-                    )
+    def get_neighbor_mask(self, x, y, tile_value):
+        """비트마스킹을 통해 주변 타일의 연결 상태를 계산"""
+        mask = 0
+        # 상, 하, 좌, 우 (4방향)
+        offsets = [(0, -1), (0, 1), (-1, 0), (1, 0)]
+        for i, (dx, dy) in enumerate(offsets):
+            nx, ny = x + dx, y + dy
+            if 0 <= ny < self.grid_size[0] and 0 <= nx < self.grid_size[1]:
+                if self.grid[ny][nx] == tile_value:
+                    mask |= (1 << i)
+        return mask
 
     def render(self, screen : Surface, camera_pos : Vector2):
+        from utils import conversion
         width = screen.get_width()
         height = screen.get_height()
         width_meter = conversion.change_px_to_meter(width)
@@ -83,8 +53,43 @@ class TileMap:
         end_x = min(int((camera_pos.x + width_meter/2)/self.tile_size)+2, self.grid_size[1])
         end_y = min(int((camera_pos.y + height_meter/2)/self.tile_size)+2, self.grid_size[0])
         
+        px_size = conversion.change_meter_to_px(Vector2(self.tile_size, self.tile_size))
         for x in range(start_x, end_x):
             for y in range(start_y, end_y):
-                tile = self.get_tile(x, y, indexing="xy")
-                if tile is not None:
-                    tile.render(screen, camera_pos)
+                tile_val = self.grid[y][x]
+                if tile_val in self.tile_types:
+                    t_type = self.tile_types[tile_val]
+                    mask = self.get_neighbor_mask(x, y, tile_val)
+                    sprite = t_type.sprite_map.get(mask, t_type.sprite_map.get(0))
+
+                    if sprite is None:
+                        sprite = DEFAULT_IMAGE
+
+                    if sprite is not None:
+                        scaled_sprite = pygame.transform.scale(sprite, px_size)
+                        pos = Vector2(float(x), float(self.grid_size[0] - y - 1)) * self.tile_size
+                        screen_pos = conversion.calculate_pos_on_screen(pos, camera_pos, screen)
+                        screen.blit(scaled_sprite, scaled_sprite.get_rect(center=screen_pos))
+
+    def get_collidables(self) -> list[Tile]:
+        collidable_tiles = []
+        for y in range(self.grid_size[0]):
+            for x in range(self.grid_size[1]):
+                val = self.grid[y][x]
+                if val in self.tile_types:
+                    t_type = self.tile_types[val]
+                    
+                    if t_type.is_collidable or t_type.is_solid:
+                        pos = Vector2(float(x), float(self.grid_size[0] - y - 1)) * self.tile_size
+                        mask = self.get_neighbor_mask(x, y, val)
+                        sprite = t_type.sprite_map.get(mask, t_type.sprite_map.get(0))
+                        if sprite is None:
+                            sprite = DEFAULT_IMAGE
+                        px_size = conversion.change_meter_to_px(Vector2(self.tile_size, self.tile_size))
+                        scaled_sprite = pygame.transform.scale(sprite, px_size)
+
+                        tile_entity = Tile(self.tile_size, scaled_sprite, pos)
+                        tile_entity.is_solid = t_type.is_solid
+                        
+                        collidable_tiles.append(tile_entity)
+        return collidable_tiles
