@@ -21,10 +21,11 @@ class EventManager:
 
     @classmethod
     def publish(cls, event_type : str, data : Any = None):
-        #print(f"{event_type}: {data} -> {len(cls._listeners.get(event_type, []))}")
+        #print(f"{event_type}: {data} -> ({len(cls._listeners.get(event_type, []))})")
         for callback in cls._listeners.get(event_type, []):
             callback(data)
 
     @classmethod
     def unsubscribe(cls, event_type: str, callback: Callable):
-        cls._listeners[event_type].remove(callback)
+        if event_type in cls._listeners and callback in cls._listeners[event_type]:
+            cls._listeners[event_type].remove(callback)

@@ -76,7 +76,7 @@ class GameScene(Scene):
         self.current_stage_idx = 0
         self.current_stage = self.stages[0]
         EventManager.subscribe("CHANGE_STAGE", self.change_stage)
-        EventManager.subscribe("FAIL_STAGE", lambda data : self.fail_stage())
+        EventManager.subscribe("FAIL_STAGE", self.fail_stage)
         EventManager.subscribe("COLLECT_INFO", self.collect_info)
 
     def change_stage(self, stage_num : int):
@@ -90,7 +90,7 @@ class GameScene(Scene):
             self.start_message_text.set_text(self.start_messages[self.current_stage_idx])
             self.start_message_text.center = (WIDTH//2, HEIGHT//2)
 
-    def fail_stage(self):
+    def fail_stage(self, *args):
         EventManager.publish("CHANGE_SCENE", "END_SCENE")
         self._publish_end_scene_info(False)
 
@@ -132,4 +132,17 @@ class GameScene(Scene):
 
     def render(self, screen):
         self.current_stage.render(screen)
+        if self.ui_timer > 0:
+            overlay = pygame.Surface((WIDTH, HEIGHT), pygame.SRCALPHA)
+            overlay.fill((0, 0, 0, 128)) 
+            screen.blit(overlay, (0, 0))
         self.ui_manager.render(screen)
+
+    def __del__(self):
+        '''EventManager로 인한 메모리 누수 방지'''
+        try:
+            EventManager.unsubscribe("CHANGE_STAGE", self.change_stage)
+            EventManager.unsubscribe("FAIL_STAGE", self.fail_stage)
+            EventManager.unsubscribe("COLLECT_INFO", self.collect_info)
+        except (ValueError, AttributeError):
+            pass
