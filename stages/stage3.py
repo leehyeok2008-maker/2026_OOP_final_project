@@ -55,7 +55,7 @@ class Stage3(Stage):
 
         if event.type == pygame.KEYDOWN:
 
-            
+
     def update(self, dt):
         # 바람 방향 변경 타이머
         self.wind_timer -= dt

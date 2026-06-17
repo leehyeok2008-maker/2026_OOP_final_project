@@ -92,15 +92,7 @@ class Stage2(Stage):
             2
         )
 
-        # 목표 표시
-        font = pygame.font.Font(None, 30)
-
-        text = font.render(
-            "GOAL",
-            True,
-            (0, 255, 0)
-        )
-
+       
         screen.blit(
             text,
             (
