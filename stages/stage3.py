@@ -29,8 +29,20 @@ class Stage3(Stage):
         self.goal_pos = Vector2(800, 300)
         self.goal_radius = 30
 
+        import random
+
         # 강풍
         self.wind_force = Vector2(1, 0)
+
+        # 10초마다 방향 변경
+        self.wind_timer = 10.0
+
+        self.wind_directions = [
+            Vector2(1, 0),  # 오른쪽
+            Vector2(-1, 0),  # 왼쪽
+            Vector2(0, 1),  # 아래
+            Vector2(0, -1)  # 위
+        ]
 
         # 상태
         self.cargo_attached = False
@@ -56,6 +68,15 @@ class Stage3(Stage):
                     self.cargo_attached = True
 
     def update(self, dt):
+        # 바람 방향 변경 타이머
+        self.wind_timer -= dt
+
+        if self.wind_timer <= 0:
+            self.wind_force = random.choice(
+                self.wind_directions
+            )
+
+            self.wind_timer = 10.0
 
         # 강풍 적용
         self.drone.rigidbody.apply_force(
@@ -112,13 +133,15 @@ class Stage3(Stage):
         if self.message_timer > 0:
 
             tutorial = [
-                "Stage 2 : 강풍 환경",
+                "Stage 3 : 강풍 환경",
                 "",
-                "강풍이 불고 있습니다.",
-                "드론이 계속 오른쪽으로 밀려납니다.",
+                "축하합니다! stage 2를 클리어하셨군요!",
+                "하지만 아쉽게도 현실은 게임처럼 간단하지 않습니다.",
+                "수많은 요소들이 상호작용하고, 언제나 예측할 수 없는 일들이 일어나죠.",
                 "",
-                "화물 위로 이동하세요.",
-                "E 키를 눌러 화물을 부착하세요.",
+                "마침 바람이 불어오는군요.",
+                "상하좌우. 바람은 당신이 상상하는 어떤 방향으로든 불어올 수 있습니다.",
+                "과연 당신은 자연과 맞설 수 있을까요?",
                 "",
                 "화물을 녹색 지점으로 운반하세요."
             ]
