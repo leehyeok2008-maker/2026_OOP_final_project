@@ -114,9 +114,15 @@ class RigidBody2D:
 
     def update(self, dt : float):
         self.velocity += (self.force / self.mass) * dt
-        self.transform.position += self.velocity * dt
-
         self.angular_velocity += (self.torque / self.moment) * dt
+
+        if self.velocity.length() < 0.001:
+            self.velocity = Vector2(0, 0)
+
+        if abs(self.angular_velocity) < 0.001:
+            self.angular_velocity = 0.0
+
+        self.transform.position += self.velocity * dt
         self.transform.angle += self.angular_velocity * dt
 
         self.clear_force()

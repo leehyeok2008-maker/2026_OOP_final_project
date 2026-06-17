@@ -24,12 +24,13 @@ class Entity(ABC):
         self.transform = transform
         self.collider = collider
         self.is_solid= True
+        self.collision_list = []
 
-    def update(self, dt) -> None:
-        pass
+    def update(self, dt):
+        self.collision_list = []
 
     def on_collision(self, other):
-        pass
+        self.collision_list.append(other)
 
     def render(self, screen : Surface, camera_pos : Vector2) -> None:
         px_size = conversion.change_meter_to_px(self.transform.size)
@@ -49,10 +50,10 @@ class StaticEntity(Entity):
         super().__init__(sprite, transform, collider)
 
     def update(self, dt: float):
-        pass
+        super().update(dt)
 
 class DynamicEntity(Entity):
-    """드론, 플레이어, 적 등 물리 연산이 필요한 객체"""
+    """드론, 화물 등 물리 연산이 필요한 객체"""
     def __init__(
         self, 
         sprite: Surface, 
@@ -67,5 +68,15 @@ class DynamicEntity(Entity):
             
         self.rigidbody = RigidBody2D(transform, mass, moment, velocity or Vector2(0, 0), angular_velocity)
 
+    def apply_friction(self, friction_coefficient: float):
+        from .tile_map import Tile
+        
+        is_touching_tile = any(isinstance(c, Tile) for c in self.collision_list)
+
+        if is_touching_tile:
+            self.rigidbody.velocity *= 0.8
+
     def update(self, dt: float):
+        self.apply_friction(0.1)
         self.rigidbody.update(dt)
+        super().update(dt)

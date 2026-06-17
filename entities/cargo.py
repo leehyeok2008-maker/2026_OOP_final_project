@@ -26,5 +26,6 @@ class Cargo(DynamicEntity):
         #공기저항
         self.rigidbody.velocity *= 0.97
         self.rigidbody.angular_velocity *= 0.95
-        self.rigidbody.update(dt)
+        
+        super().update(dt)
         

@@ -24,7 +24,6 @@ class Drone(DynamicEntity):
 
         #region 드론 내부 변수
         self.is_holding = False
-        self.collision_list = []
         self.attached_cargo : None | Cargo= None
         self.rope_anchor_offset = Vector2(0.0, -size[1] * collider_scale[1] / 2)
         self.rope_speed = 1.0
@@ -96,14 +95,12 @@ class Drone(DynamicEntity):
         self.rigidbody.velocity *= 0.95
         self.rigidbody.angular_velocity *= 0.95
 
+        print(self.rigidbody.velocity)
+
         self.rigidbody.apply_force(Vector2(0.0, self.left_thrust), self.left_arm_position, is_local=True)
         self.rigidbody.apply_force(Vector2(0.0, self.right_thrust), self.right_arm_position, is_local=True)
 
-        self.rigidbody.update(dt)
-        self.collision_list.clear()
-
-    def on_collision(self, other):
-        self.collision_list.append(other)
+        super().update(dt)
             
             
             
