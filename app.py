@@ -22,12 +22,14 @@ class App():
         self.dt = 0.0
 
         self.is_running = True
-        self.scenes : dict[str, Scene]= {
-            "START_SCENE" : StartScene(),
-            "GAME_SCENE" : GameScene(),
-            "END_SCENE" : EndScene(),
+        
+        self.scene_classes : dict[str, type[Scene]] = {
+            "START_SCENE" : StartScene,
+            "GAME_SCENE" : GameScene,
+            "END_SCENE" : EndScene,
         }
-        self.current_scene = self.scenes["START_SCENE"]
+        
+        self.current_scene = self.scene_classes["START_SCENE"]()
 
         self.set_subscription()
 
@@ -63,10 +65,13 @@ class App():
         pygame.quit()
         sys.exit()
     #endregion
+    
     #region 콜백 함수들
     def end_game(self):
         self.is_running = False
+        
     def change_scene(self, val):
-        if val in self.scenes.keys():
-            self.current_scene = self.scenes[val]
+        if val in self.scene_classes.keys():
+            scene_class = self.scene_classes[val]
+            self.current_scene = scene_class()
     #endregion
