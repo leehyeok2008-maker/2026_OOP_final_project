@@ -25,7 +25,7 @@ class GenericStage(Stage):
         )
         
         drone = Drone((2.0, 2.0), reader.load_image_from_file("images/drone.jpg"), 1, position=drone_pos, collider_scale=(0.8, 0.4))
-        cargo = None if not has_cargo else Cargo((1.5, 1.5), reader.load_image_from_file("images/cargo.png"), 1, position=cargo_pos)
+        cargo = None if not has_cargo else Cargo((1.2, 1.2), reader.load_image_from_file("images/cargo.png"), 1, position=cargo_pos)
         goal = Goal((1.0, 1.0), reader.load_image_from_file("images/drone.jpg"), 1, position=goal_pos, condition_type=goal_condition, goal_event=goal_event)
         
         super().__init__(
