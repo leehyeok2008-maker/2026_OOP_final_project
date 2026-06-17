@@ -8,7 +8,7 @@ from controllers import Controller
 from managers import ColliderManager, EventManager
 
 class Stage(ABC):
-    def __init__(self, drone : Drone, cargo : Cargo, tile_map : TileMap, controller : Controller, goal : Goal):
+    def __init__(self, drone : Drone, cargo : Cargo | None, tile_map : TileMap, controller : Controller, goal : Goal):
         self.drone = drone
         self.cargo = cargo
         self.tile_map = tile_map
@@ -19,14 +19,19 @@ class Stage(ABC):
 
         self.collider_manager = ColliderManager()
         self.collider_manager.register(self.drone, self.drone.collider)
-        self.collider_manager.register(self.cargo, self.cargo.collider)
+        if self.cargo: self.collider_manager.register(self.cargo, self.cargo.collider)
         self.collider_manager.register(self.goal, self.goal.collider)
 
         tiles_to_register = self.tile_map.get_collidables()
         self.collider_manager.register_all([(tile, tile.collider) for tile in tiles_to_register])
         self.camera_pos = conversion.change_px_to_meter(Vector2(WIDTH - DEFAULT_PX_PER_METER, HEIGHT - DEFAULT_PX_PER_METER))/2
 
+        self.time = 0.0
+
     def update(self, dt : float):
+        # 게임 시간 업데이트
+        self.time += dt
+
         # 충돌 감지
         self.collider_manager.check_all()
 
@@ -41,19 +46,20 @@ class Stage(ABC):
         
         # 역학 계산
         self.drone.rigidbody.apply_force(self.drone.rigidbody.mass * self.grav_acc)
-        self.cargo.rigidbody.apply_force(self.drone.rigidbody.mass * self.grav_acc)
         self.drone.rigidbody.apply_force(-self.drone.left_velocity *  self.air_resistance)
-        self.cargo.rigidbody.apply_force(-self.drone.right_velocity * self.air_resistance)
+        self.drone.rigidbody.apply_force(-self.drone.right_velocity * self.air_resistance)
         self.controller.command(dt)
         self.drone.update(dt)
-        self.cargo.update(dt)
+        if self.cargo:
+            self.cargo.rigidbody.apply_force(self.cargo.rigidbody.mass * self.grav_acc)
+            self.cargo.update(dt)
 
         self.update_rope()
 
     def render(self, screen : Surface):
         screen.fill((135, 206, 235))
         self.drone.render(screen, self.camera_pos)
-        self.cargo.render(screen, self.camera_pos)
+        if self.cargo: self.cargo.render(screen, self.camera_pos)
         self.tile_map.render(screen, self.camera_pos)
         self.goal.render(screen, self.camera_pos)
         self.render_rope(screen, self.camera_pos)
@@ -69,7 +75,7 @@ class Stage(ABC):
         current_length = self.drone.rope_length
         if current_distance > current_length:
             rope_dir = to_cargo.normalize()
-            self.cargo.transform.position = anchor_point + rope_dir * current_length
+            cargo.transform.position = anchor_point + rope_dir * current_length
 
             relative_velocity = cargo.rigidbody.velocity - self.drone.rigidbody.velocity
             vel_along_rope = relative_velocity.dot(rope_dir)

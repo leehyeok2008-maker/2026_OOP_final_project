@@ -36,6 +36,7 @@ class UIText(UIObject):
     
     def set_text(self, text : str):
         self.text = text
+        self.width, self.height = self._calculate_dimensions(text, self.font, self.line_spacing)
 
     def render(self, screen : Surface):
         if not self.visible:

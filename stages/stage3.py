@@ -1,6 +1,7 @@
 from .stage import Stage
 from entities import *
 from controllers import ManualController ,PIDManualController
+from managers import UIManager
 import pygame
 from pygame import Vector2
 from utils import reader
@@ -15,7 +16,7 @@ class Stage3(Stage):
         tile_map = TileMap(
             grid=reader.load_grid_from_file("stages/map1.txt"),
             tile_size=1.0,
-            tile_types=DEFAULT_TILE_TYPE  # tile_sprites_dict에서 tile_types로 매개변수 교체
+            tile_types=DEFAULT_TILE_TYPE
         )
         goal = Goal((1.0, 1.0), pygame.image.load("images/drone.jpg"), 3, position=pygame.Vector2(2, 3))
         super().__init__(
@@ -50,6 +51,10 @@ class Stage3(Stage):
 
         # 안내 문구 표시 시간
         self.message_timer = 5.0
+
+        #region UI
+        self.ui_manager = UI
+        #endregion
 
 
     def update(self, dt):

@@ -28,9 +28,9 @@ def load_image_from_file(file_path : str) -> pygame.Surface:
         
     try:
         image = pygame.image.load(file_path)
-        image = image.convert()
-        bg_color = image.get_at((0, 0))
-        image.set_colorkey(bg_color)
+        #image = image.convert()
+        #bg_color = image.get_at((0, 0))
+        #image.set_colorkey(bg_color)
         
         return image.convert_alpha()
         

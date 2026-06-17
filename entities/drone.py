@@ -1,9 +1,12 @@
+import math
 from pygame import Vector2, Surface
 from .entity import DynamicEntity
 from .cargo import Cargo
 from physics.rigidbody2d import RigidBody2D
 from physics.transform import Transform
 from physics.collider import RectCollider
+from managers.event_manager import EventManager
+
 class Drone(DynamicEntity):
     def __init__(
         self, size : tuple[float, float], sprite : Surface, mass : float = 1.0, moment : float | None = None, 
@@ -91,11 +94,11 @@ class Drone(DynamicEntity):
     #endregion
     
     def update(self, dt):
+        if abs(self.transform.angle) > math.pi / 2:
+            EventManager.publish("FAIL_STAGE")
         #공기저항
         self.rigidbody.velocity *= 0.95
         self.rigidbody.angular_velocity *= 0.95
-
-        print(self.rigidbody.velocity)
 
         self.rigidbody.apply_force(Vector2(0.0, self.left_thrust), self.left_arm_position, is_local=True)
         self.rigidbody.apply_force(Vector2(0.0, self.right_thrust), self.right_arm_position, is_local=True)
