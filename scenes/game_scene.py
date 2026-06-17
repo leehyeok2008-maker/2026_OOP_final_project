@@ -1,6 +1,6 @@
 import pygame
 from .scene import Scene
-from .stats import FlightStats
+from data.stats import FlightStats
 
 from stages import Stage, Stage1, Stage2, Stage3
 from managers import UIManager, EventManager

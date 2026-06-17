@@ -1,7 +1,7 @@
 import pygame
 from ui import UIText
 from .scene import Scene
-from .stats import FlightStats
+from data.stats import FlightStats
 from managers import UIManager, InputManager, EventManager
 
 class EndScene(Scene):

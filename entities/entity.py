@@ -23,7 +23,7 @@ class Entity(ABC):
         self.sprite = sprite
         self.transform = transform
         self.collider = collider
-        self.has_physics = True
+        self.is_solid= True
 
     def update(self, dt) -> None:
         pass

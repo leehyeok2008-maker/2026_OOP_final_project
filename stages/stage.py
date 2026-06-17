@@ -8,19 +8,22 @@ from controllers import Controller
 from managers import ColliderManager, EventManager
 
 class Stage(ABC):
-    def __init__(self, drone : Drone, cargo : Cargo, map : TileMap, controller : Controller, goal : Goal):
+    def __init__(self, drone : Drone, cargo : Cargo, tile_map : TileMap, controller : Controller, goal : Goal):
         self.drone = drone
         self.cargo = cargo
-        self.map = map
+        self.tile_map = tile_map
         self.controller = controller
         self.goal = goal
         self.grav_acc = Vector2(0, -9.8)
         self.air_resistance = 0.05
+
         self.collider_manager = ColliderManager()
         self.collider_manager.register(self.drone, self.drone.collider)
         self.collider_manager.register(self.cargo, self.cargo.collider)
         self.collider_manager.register(self.goal, self.goal.collider)
-        self.collider_manager.register_all([(e, e.collider) for e in self.map.get_tiles()])
+
+        tiles_to_register = self.tile_map.get_collidables()
+        self.collider_manager.register_all([(tile, tile.collider) for tile in tiles_to_register])
         self.camera_pos = conversion.change_px_to_meter(Vector2(WIDTH - DEFAULT_PX_PER_METER, HEIGHT - DEFAULT_PX_PER_METER))/2
 
     def update(self, dt : float):
@@ -50,7 +53,7 @@ class Stage(ABC):
     def render(self, screen : Surface):
         self.drone.render(screen, self.camera_pos)
         self.cargo.render(screen, self.camera_pos)
-        self.map.render(screen, self.camera_pos)
+        self.tile_map.render(screen, self.camera_pos)
         self.goal.render(screen, self.camera_pos)
         self.render_rope(screen, self.camera_pos)
 
