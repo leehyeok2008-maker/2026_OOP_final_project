@@ -51,7 +51,7 @@ class Stage3(Stage):
         # 안내 문구 표시 시간
         self.message_timer = 5.0
 
-            
+
     def update(self, dt):
         # 바람 방향 변경 타이머
         self.wind_timer -= dt
