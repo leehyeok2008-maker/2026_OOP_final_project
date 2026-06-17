@@ -55,19 +55,7 @@ class Stage3(Stage):
 
         if event.type == pygame.KEYDOWN:
 
-            # E키로 화물 연결
-            if event.key == pygame.K_e:
-
-                distance = (
-                    self.drone.rigidbody.transform.position
-                    -
-                    self.cargo.rigidbody.transform.position
-                ).length()
-
-                if distance < 50:
-
-                    self.cargo_attached = True
-
+            
     def update(self, dt):
         # 바람 방향 변경 타이머
         self.wind_timer -= dt
