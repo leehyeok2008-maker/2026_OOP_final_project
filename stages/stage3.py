@@ -10,8 +10,8 @@ import random
 class Stage3(Stage):
 
     def __init__(self):
-        drone = Drone((2.0, 2.0), pygame.image.load("images/drone.jpg"), 1, position=pygame.Vector2(3, 3), collider_scale=(0.8, 0.4))
-        cargo = Cargo((1.0, 1.0), pygame.image.load("images/cargo.jpeg"), 1, position=pygame.Vector2(3, 1))
+        drone = Drone((2.0, 2.0), reader.load_image_from_file("images/drone.jpg"), 1, position=pygame.Vector2(3, 3), collider_scale=(0.8, 0.4))
+        cargo = Cargo((1.0, 1.0), reader.load_image_from_file("images/cargo.jpeg"), 1, position=pygame.Vector2(3, 1))
         tile_map = TileMap(
             grid=reader.load_grid_from_file("stages/map1.txt"),
             tile_size=1.0,
@@ -50,10 +50,6 @@ class Stage3(Stage):
 
         # 안내 문구 표시 시간
         self.message_timer = 5.0
-
-    def handle_event(self, event):
-
-        if event.type == pygame.KEYDOWN:
 
 
     def update(self, dt):
@@ -99,23 +95,6 @@ class Stage3(Stage):
             self.goal_pos,
             self.goal_radius,
             2
-        )
-
-        # 목표 표시
-        font = pygame.font.Font(None, 30)
-
-        text = font.render(
-            "GOAL",
-            True,
-            (0, 255, 0)
-        )
-
-        screen.blit(
-            text,
-            (
-                self.goal_pos.x - 20,
-                self.goal_pos.y - 50
-            )
         )
 
         # 튜토리얼 문구
