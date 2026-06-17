@@ -35,10 +35,9 @@ class Entity(ABC):
     def render(self, screen : Surface, camera_pos : Vector2) -> None:
         px_size = conversion.change_meter_to_px(self.transform.size)
         scaled_sprite = pygame.transform.scale(self.sprite, px_size)
-        scaled_sprite = scaled_sprite.convert_alpha()
         angle_deg = math.degrees(self.transform.angle)
         rotated_sprite = pygame.transform.rotate(scaled_sprite, angle_deg)
-        rotated_sprite.set_colorkey((0, 0, 0))
+
         rect = rotated_sprite.get_rect(
             center=conversion.calculate_pos_on_screen(self.transform.position, camera_pos, screen)
         )

@@ -51,6 +51,7 @@ class Stage(ABC):
         self.update_rope()
 
     def render(self, screen : Surface):
+        screen.fill((135, 206, 235))
         self.drone.render(screen, self.camera_pos)
         self.cargo.render(screen, self.camera_pos)
         self.tile_map.render(screen, self.camera_pos)
