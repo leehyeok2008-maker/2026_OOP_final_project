@@ -24,7 +24,7 @@ class Stage(ABC):
 
         tiles_to_register = self.tile_map.get_collidables()
         self.collider_manager.register_all([(tile, tile.collider) for tile in tiles_to_register])
-        self.camera_pos = conversion.change_px_to_meter(Vector2(WIDTH - DEFAULT_PX_PER_METER, HEIGHT - DEFAULT_PX_PER_METER))/2
+        self.camera_pos = conversion.change_px_to_meter(Vector2((tile_map.grid_size[1] - 1) * DEFAULT_PX_PER_METER , (tile_map.grid_size[0] - 1) * DEFAULT_PX_PER_METER))/2
 
         self.time = 0.0
 

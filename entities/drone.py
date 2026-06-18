@@ -2,6 +2,7 @@ import math
 from pygame import Vector2, Surface
 from .entity import DynamicEntity
 from .cargo import Cargo
+from .tile_map import Tile
 from physics.rigidbody2d import RigidBody2D
 from physics.transform import Transform
 from physics.collider import RectCollider
@@ -94,8 +95,13 @@ class Drone(DynamicEntity):
     #endregion
     
     def update(self, dt):
-        if abs(self.transform.angle) > math.pi / 2:
-            EventManager.publish("FAIL_STAGE")
+        if abs(self.transform.angle) > (math.pi / 2) * 0.65:
+            EventManager.publish("FAIL_STAGE", "제어 실패")
+        for c in self.collision_list: 
+            if isinstance(c, Tile) and self.rigidbody.velocity.length() > 3.0:
+                EventManager.publish("FAIL_STAGE", "드론 충돌") 
+        EventManager.publish("SET_HOLDING_TEXT", self.is_holding)
+        
         #공기저항
         self.rigidbody.velocity *= 0.95
         self.rigidbody.angular_velocity *= 0.95

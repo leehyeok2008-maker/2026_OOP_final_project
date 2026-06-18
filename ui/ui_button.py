@@ -18,7 +18,9 @@ class UIButton(UIObject):
 
         bg_color=(70, 70, 70),
         text_color=(0, 0, 0),
-        hover_color=(100, 100, 100)
+        hover_color=(100, 100, 100),
+        
+        border_radius = -1,
     ):
         super().__init__(x, y, width, height)
         self.text = text
@@ -28,6 +30,8 @@ class UIButton(UIObject):
         self.bg_color = bg_color
         self.hover_color = hover_color
         self.text_color = text_color
+
+        self.border_radius = border_radius
 
         self.is_hovering = False
 
@@ -63,7 +67,8 @@ class UIButton(UIObject):
                 self.y,
                 self.width,
                 self.height
-            )
+            ),
+            border_radius=self.border_radius
         )
 
         text_surface = self.font.render(

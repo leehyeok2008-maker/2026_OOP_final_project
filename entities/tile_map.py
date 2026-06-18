@@ -1,6 +1,6 @@
 import pygame
+from config import *
 from data import TileType
-from config import DEFAULT_IMAGE
 from utils import conversion
 from .entity import StaticEntity
 from pygame import Surface, Vector2
@@ -40,8 +40,9 @@ class TileMap:
                     mask |= (1 << i)
         return mask
 
-    def render(self, screen : Surface, camera_pos : Vector2):
-        from utils import conversion
+    def render(self, screen : Surface, camera_pos : Vector2 | None = None):
+        if camera_pos is None:
+            camera_pos = conversion.change_px_to_meter(Vector2((self.grid_size[1] - 1) * DEFAULT_PX_PER_METER , (self.grid_size[0] - 1) * DEFAULT_PX_PER_METER))/2
         width = screen.get_width()
         height = screen.get_height()
         width_meter = conversion.change_px_to_meter(width)
