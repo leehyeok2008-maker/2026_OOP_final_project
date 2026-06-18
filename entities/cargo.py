@@ -1,8 +1,10 @@
 from pygame import Vector2, Surface
 from .entity import DynamicEntity
+from .tile_map import Tile
 from physics.transform import Transform
 from physics.rigidbody2d import RigidBody2D
 from physics.collider import RectCollider
+from managers.event_manager import EventManager
 
 class Cargo(DynamicEntity):
     def __init__(
@@ -23,6 +25,9 @@ class Cargo(DynamicEntity):
         )
 
     def update(self, dt):
+        for c in self.collision_list: 
+            if isinstance(c, Tile) and self.rigidbody.velocity.length() > 1.5:
+                EventManager.publish("FAIL_STAGE", "화물 충돌") 
         #공기저항
         self.rigidbody.velocity *= 0.97
         self.rigidbody.angular_velocity *= 0.95

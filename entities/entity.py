@@ -32,7 +32,7 @@ class Entity(ABC):
     def on_collision(self, other):
         self.collision_list.append(other)
 
-    def render(self, screen : Surface, camera_pos : Vector2) -> None:
+    def render(self, screen : Surface, camera_pos : Vector2 = Vector2(0, 0)) -> None:
         px_size = conversion.change_meter_to_px(self.transform.size)
         scaled_sprite = pygame.transform.scale(self.sprite, px_size)
         angle_deg = math.degrees(self.transform.angle)
