@@ -49,7 +49,7 @@ class EndScene(Scene):
             f"이동 거리 : {self.stats.distance:.1f} m\n"
             f"충돌 시간 : {self.stats.collision_time: .2f}s\n"
             f"에너지 사용 : {self.stats.energy_used:.1f} J\n"
-            f"점수 : {self.stats.score}\n\n"
+            f"점수 : {self.stats.score if self.success else "---"}\n\n"
             "[R] 재시작 \n"
             "[M] 메인 메뉴"
         )
