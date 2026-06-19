@@ -32,7 +32,7 @@ class Drone(DynamicEntity):
         self.rope_anchor_offset = Vector2(0.0, -size[1] * collider_scale[1] / 2)
         self.rope_speed = 1.0
         self.min_rope_length = size[1] * collider_scale[1]
-        self.max_rope_length = 5.0
+        self.max_rope_length = 6.0
         self.__rope_length = self.min_rope_length
 
         self.max_left_thrust = 11.0
@@ -95,7 +95,7 @@ class Drone(DynamicEntity):
     #endregion
     
     def update(self, dt):
-        if abs(self.transform.angle) > (math.pi / 2) * 0.65:
+        if abs(self.transform.angle) > (math.pi / 2) * 0.75:
             EventManager.publish("FAIL_STAGE", "제어 실패")
         for c in self.collision_list: 
             if isinstance(c, Tile) and self.rigidbody.velocity.length() > 3.0:

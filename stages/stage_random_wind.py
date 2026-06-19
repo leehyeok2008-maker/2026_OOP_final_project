@@ -50,7 +50,7 @@ class StageRandomWind(GenericStage):
         self.wind_timer -= dt
         if self.wind_timer <= 0:
             wind_option = random.choice(self.wind_options)
-            self.wind_force = wind_option["force"] * random.uniform(0.5, 2.0)
+            self.wind_force = wind_option["force"] * random.uniform(0.5, 1.5)
             self.wind_dir_text = wind_option["dir_text"]
             self.wind_timer = random.uniform(5.0, 15.0)
 
