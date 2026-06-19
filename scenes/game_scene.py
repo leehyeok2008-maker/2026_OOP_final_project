@@ -155,7 +155,7 @@ class GameScene(Scene):
         EventManager.subscribe("COLLECT_INFO", self.collect_info)
         EventManager.subscribe("SET_HOLDING_TEXT", self.set_holding_text)
 
-        self.change_stage(7)
+        self.change_stage(0)
 
     #region published events
     def change_stage(self, stage_num : int):
