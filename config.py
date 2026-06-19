@@ -55,6 +55,22 @@ DEFAULT_TILE_TYPE = {
         },
         is_solid=False, 
         is_collidable=True
+    ),
+    3: TileType(
+        name="decor_bush",
+        sprite_map={
+            0: pygame.image.load("images/bush.png"),
+        },
+        is_solid=False, 
+        is_collidable=False
+    ),
+    4: TileType(
+        name="decor_ston",
+        sprite_map={
+            0: pygame.image.load("images/stone.png"),
+        },
+        is_solid=False, 
+        is_collidable=False
     )
 }
 

@@ -36,47 +36,47 @@ class GameScene(Scene):
                 drone_pos=Vector2(12, 3.5),
                 cargo_pos=Vector2(12, 2.2),
                 goal_pos=Vector2(12, 10), # goal_pos=Vector2(12, 10),
-                goal_condition="DRONE_ONLY",
+                goal_condition="CARGO_ONLY",
                 goal_event=lambda : EventManager.publish("CHANGE_STAGE", 3)
             ),
             GenericStage(
                 map_path="maps/map_tutorial4.txt",
                 drone_pos=Vector2(3, 3),
                 cargo_pos=Vector2(3, 1.2),
-                goal_pos=Vector2(3, 8), # goal_pos=Vector2(20, 8),
-                goal_condition="DRONE_ONLY",
+                goal_pos=Vector2(20, 8), # goal_pos=Vector2(20, 8),
+                goal_condition="CARGO_ONLY",
                 goal_event=lambda : EventManager.publish("CHANGE_STAGE", 4)
             ),
             GenericStage(
                 map_path="maps/map_stage1.txt",
-                drone_pos=Vector2(2, 1.5),
-                cargo_pos=Vector2(21.5, 1.2),
-                goal_pos=Vector2(7, 8.5), # goal_pos=Vector2(7, 8.5),
-                goal_condition="DRONE_ONLY",
+                drone_pos=Vector2(3, 3),
+                cargo_pos=Vector2(3, 1),
+                goal_pos=Vector2(22.5, 10),
+                goal_condition="CARGO_ONLY",
+                has_cargo=True,
                 goal_event=lambda : EventManager.publish("CHANGE_STAGE", 5)
             ),
             GenericStage(
                 map_path="maps/map_stage2.txt",
                 drone_pos=Vector2(3, 1.5),
-                cargo_pos=Vector2(22, 10.2),
-                goal_pos=Vector2(21.5, 1.5), #goal_pos=Vector2(21.5, 1.5),
-                goal_condition="DRONE_ONLY",
+                cargo_pos=Vector2(21.5, 1.2),
+                goal_pos=Vector2(7, 8.5), # goal_pos=Vector2(7, 8.5),
+                goal_condition="CARGO_ONLY",
                 goal_event=lambda : EventManager.publish("CHANGE_STAGE", 6)
             ),
             StageStaticWind(
                 map_path="maps/map_stage3.txt",
-                drone_pos=Vector2(3.0, 3.0),
-                cargo_pos=Vector2(3.0, 1.0),
-                goal_pos=Vector2(2.0, 3.0),
+                drone_pos=Vector2(3, 1.5),
+                cargo_pos=Vector2(22, 10.2),
+                goal_pos=Vector2(21.5, 4.5), #goal_pos=Vector2(21.5, 1.5),
                 goal_condition="CARGO_ONLY",
-                has_cargo=True,
                 goal_event=lambda : EventManager.publish("CHANGE_STAGE", 7)
             ),
             StageRandomWind(
                 map_path="maps/map_stage4.txt",
-                drone_pos=Vector2(3.0, 3.0),
-                cargo_pos=Vector2(3.0, 1.0),
-                goal_pos=Vector2(2.0, 3.0),
+                drone_pos=Vector2(2, 1.2),
+                cargo_pos=Vector2(1.5, 10),
+                goal_pos=Vector2(11.5, 3.5),
                 goal_condition="CARGO_ONLY",
                 has_cargo=True,
                 goal_event=lambda : EventManager.publish("CHANGE_STAGE", 8)
@@ -219,6 +219,7 @@ class GameScene(Scene):
         collision_penalty = max(0, int(self.total_collision_time * 500))
         final_score = base_score - time_penalty - energy_penalty - collision_penalty
         return max(0, final_score)
+    
     def update(self, dt):
         if self.ui_timer > 0:
             self.ui_timer -= dt
