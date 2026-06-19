@@ -1,3 +1,4 @@
+import math
 import pygame
 from pygame import Vector2
 from entities import Entity, StaticEntity, DynamicEntity
@@ -31,12 +32,16 @@ class ColliderManager:
     #region 충돌 감지
     def check_all(self):
         entries = list(self._entries.items())
+        dynamics = []
+        statics = []
 
-        for i in range(len(entries)):
-            for j in range(i + 1, len(entries)):
-                ea, ca = entries[i]
-                eb, cb = entries[j]
-                if not isinstance(ea, DynamicEntity) and not isinstance(eb, DynamicEntity):
+        for ea, ca in entries:
+            if isinstance(ea, DynamicEntity): dynamics.append((ea, ca))
+            else: statics.append((ea, ca))
+
+        for ea, ca in dynamics:
+            for eb, cb in entries:
+                if (ea.transform.position - eb.transform.position).length_squared() > (ca.max_distance + cb.max_distance) ** 2:
                     continue
                 collision_info = self.do_intersect(ca, cb)
                 if (collision_info is not None):

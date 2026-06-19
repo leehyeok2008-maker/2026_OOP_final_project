@@ -1,4 +1,5 @@
 import pygame
+import time
 from config import *
 from entities import *
 from utils import conversion
@@ -43,7 +44,7 @@ class Stage(ABC):
             self.drone.transform.transform_absolute_vector(self.drone.left_velocity).dot(Vector2(0.0, 1.0)) * self.drone.left_thrust \
             + self.drone.transform.transform_absolute_vector(self.drone.right_velocity).dot(Vector2(0.0, 1.0)) * self.drone.right_thrust 
         })
-        
+
         # 역학 계산
         self.drone.rigidbody.apply_force(self.drone.rigidbody.mass * self.grav_acc)
         self.drone.rigidbody.apply_force(-self.drone.left_velocity *  self.air_resistance)

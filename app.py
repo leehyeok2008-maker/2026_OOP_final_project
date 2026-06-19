@@ -58,6 +58,7 @@ class App():
     def run(self):
         while self.is_running:
             self.dt = self.clock.tick(self.fps) / 1000
+            print(1/ self.dt)
             self.handle_event()
             self.update()
             self.render()

@@ -1,3 +1,4 @@
+import math
 import pygame
 from config import *
 from .scene import Scene
@@ -16,7 +17,7 @@ class GameScene(Scene):
                 map_path="maps/map_tutorial1.txt",
                 drone_pos=Vector2(12, 3),
                 cargo_pos=Vector2(0, 0),
-                goal_pos=Vector2(12, 3),
+                goal_pos=Vector2(12, 12), #goal_pos=Vector2(12, 12),
                 has_cargo=False,
                 goal_condition="DRONE_ONLY",
                 goal_event=lambda : EventManager.publish("CHANGE_STAGE", 1)
@@ -25,7 +26,7 @@ class GameScene(Scene):
                 map_path="maps/map_tutorial2.txt",
                 drone_pos=Vector2(4, 4),
                 cargo_pos=Vector2(0, 0),
-                goal_pos=Vector2(4, 4),
+                goal_pos=Vector2(4, 12), # goal_pos=Vector2(4, 12),
                 has_cargo=False,
                 goal_condition="DRONE_ONLY",
                 goal_event=lambda : EventManager.publish("CHANGE_STAGE", 2)
@@ -34,32 +35,32 @@ class GameScene(Scene):
                 map_path="maps/map_tutorial3.txt",
                 drone_pos=Vector2(12, 3.5),
                 cargo_pos=Vector2(12, 2.2),
-                goal_pos=Vector2(12, 10),
-                goal_condition="CARGO_ONLY",
+                goal_pos=Vector2(12, 10), # goal_pos=Vector2(12, 10),
+                goal_condition="DRONE_ONLY",
                 goal_event=lambda : EventManager.publish("CHANGE_STAGE", 3)
             ),
             GenericStage(
                 map_path="maps/map_tutorial4.txt",
                 drone_pos=Vector2(3, 3),
-                cargo_pos=Vector2(3, 1.5),
-                goal_pos=Vector2(20, 8),
-                goal_condition="CARGO_ONLY",
+                cargo_pos=Vector2(3, 1.2),
+                goal_pos=Vector2(3, 8), # goal_pos=Vector2(20, 8),
+                goal_condition="DRONE_ONLY",
                 goal_event=lambda : EventManager.publish("CHANGE_STAGE", 4)
             ),
             GenericStage(
                 map_path="maps/map_stage1.txt",
-                drone_pos=Vector2(12, 4),
-                cargo_pos=Vector2(12, 3),
-                goal_pos=Vector2(12, 10),
-                goal_condition="CARGO_ONLY",
+                drone_pos=Vector2(2, 1.5),
+                cargo_pos=Vector2(21.5, 1.2),
+                goal_pos=Vector2(7, 8.5), # goal_pos=Vector2(7, 8.5),
+                goal_condition="DRONE_ONLY",
                 goal_event=lambda : EventManager.publish("CHANGE_STAGE", 5)
             ),
             GenericStage(
                 map_path="maps/map_stage2.txt",
-                drone_pos=Vector2(12, 4),
-                cargo_pos=Vector2(12, 3),
-                goal_pos=Vector2(12, 10),
-                goal_condition="CARGO_ONLY",
+                drone_pos=Vector2(3, 1.5),
+                cargo_pos=Vector2(22, 10.2),
+                goal_pos=Vector2(21.5, 1.5), #goal_pos=Vector2(21.5, 1.5),
+                goal_condition="DRONE_ONLY",
                 goal_event=lambda : EventManager.publish("CHANGE_STAGE", 6)
             ),
             StageStaticWind(
@@ -116,6 +117,8 @@ class GameScene(Scene):
         info_font = pygame.font.SysFont("malgungothic", 30)
 
         # 시작 메시지
+        self.overlay_image = UIImage(0, 0, pygame.Surface((WIDTH, HEIGHT), pygame.SRCALPHA))
+        self.overlay_image.image.fill((0, 0, 0, 128)) 
         self.start_message_text = UIText(0, 0, self.start_messages_data[0][0][1], big_font, (255, 255, 255))
         self.start_message_text.center = (WIDTH//2, HEIGHT//2)
 
@@ -128,6 +131,7 @@ class GameScene(Scene):
         
         # ui_manager 추가
         self.ui_manager.set([
+            self.overlay_image,
             self.bg_image,
             self.start_message_text,
             self.holding_text,
@@ -151,7 +155,7 @@ class GameScene(Scene):
         EventManager.subscribe("COLLECT_INFO", self.collect_info)
         EventManager.subscribe("SET_HOLDING_TEXT", self.set_holding_text)
 
-        self.change_stage(0)
+        self.change_stage(7)
 
     #region published events
     def change_stage(self, stage_num : int):
@@ -166,6 +170,7 @@ class GameScene(Scene):
                 delay, text_line = self.current_timeline.pop(0)
                 self.ui_timer = delay
                 
+                self.overlay_image.visible = True
                 self.start_message_text.set_text(text_line)
                 self.start_message_text.center = (WIDTH // 2, HEIGHT // 2)
             else:
@@ -208,8 +213,12 @@ class GameScene(Scene):
         })
 
     def _calculate_score(self) -> int:
-        return round((1.1 ** self.total_collision_time) * self.total_time * self.total_distance * self.total_energy_used)
-
+        base_score = 10000
+        time_penalty = max(0, int(self.total_time * 50))
+        energy_penalty = max(0, int(self.total_energy_used * 10))
+        collision_penalty = max(0, int(self.total_collision_time * 500))
+        final_score = base_score - time_penalty - energy_penalty - collision_penalty
+        return max(0, final_score)
     def update(self, dt):
         if self.ui_timer > 0:
             self.ui_timer -= dt
@@ -222,6 +231,7 @@ class GameScene(Scene):
                     self.start_message_text.center = (WIDTH // 2, HEIGHT // 2)
                 else:
                     self.start_message_text.set_text("")
+                    self.overlay_image.visible = False
         else:       
             self.total_time += dt
             self.current_stage.update(dt)
@@ -229,10 +239,6 @@ class GameScene(Scene):
 
     def render(self, screen):
         self.current_stage.render(screen)
-        if self.ui_timer > 0:
-            overlay = pygame.Surface((WIDTH, HEIGHT), pygame.SRCALPHA)
-            overlay.fill((0, 0, 0, 128)) 
-            screen.blit(overlay, (0, 0))
         self.ui_manager.render(screen)
 
     def __del__(self):
