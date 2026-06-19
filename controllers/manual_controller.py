@@ -25,6 +25,7 @@ class ManualController(Controller):
         if InputManager.is_key_pressed(pygame.K_r):
             if self.drone.is_holding:
                 self.drone.is_holding = False
+                self.drone.attached_cargo = None
             else:
                 for other in self.drone.collision_list:
                     rope_length = float('inf')
@@ -46,4 +47,7 @@ class ManualController(Controller):
             self.drone.rope_length -= self.drone.rope_speed * dt
 
         self.drone.set_thrust(left_input, right_input)
+
+    def __str__(self):
+        return "기본 조종기"
         
