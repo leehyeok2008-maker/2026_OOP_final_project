@@ -5,7 +5,8 @@ from .scene import Scene
 from data.stats import FlightStats
 from pygame import Vector2
 from stages import *
-from managers import UIManager, EventManager
+from managers import UIManager, EventManager, InputManager
+from controllers import ManualController, PIDManualController
 from ui import *
 
 class GameScene(Scene):
@@ -49,9 +50,9 @@ class GameScene(Scene):
             ),
             GenericStage(
                 map_path="maps/map_stage1.txt",
-                drone_pos=Vector2(3, 3),
-                cargo_pos=Vector2(3, 1),
-                goal_pos=Vector2(22.5, 10),
+                drone_pos=Vector2(2.5, 3),
+                cargo_pos=Vector2(2.5, 1),
+                goal_pos=Vector2(22.5, 10.5),
                 goal_condition="CARGO_ONLY",
                 has_cargo=True,
                 goal_event=lambda : EventManager.publish("CHANGE_STAGE", 5)
@@ -123,11 +124,12 @@ class GameScene(Scene):
         self.start_message_text.center = (WIDTH//2, HEIGHT//2)
 
         # 게임 화면 디스플레이
-        self.bg_image = UIImage(20, 20, pygame.Surface((450, 150), pygame.SRCALPHA))
+        self.bg_image = UIImage(20, 20, pygame.Surface((450, 180), pygame.SRCALPHA))
         self.bg_image.image.fill((0, 0, 0, 160))
         self.holding_text = UIText(30, 30, "상태: ...", info_font, (255, 255, 255))
         self.map_info_text = UIText(30, 70, "맵 정보: ...", info_font, (255, 255, 255))
         self.mission_type_text = UIText(30, 110, "미션: ...", info_font, (255, 255, 255))
+        self.controller_type_text = UIText(30, 150, "조종기(c): ...", info_font, (255, 255, 255))
         
         # ui_manager 추가
         self.ui_manager.set([
@@ -137,6 +139,7 @@ class GameScene(Scene):
             self.holding_text,
             self.map_info_text,
             self.mission_type_text,
+            self.controller_type_text
         ])
         #endregion
         
@@ -178,6 +181,7 @@ class GameScene(Scene):
 
         self.map_info_text.set_text(f"맵 정보: {self.map_names[self.current_stage_idx]}")
         self.mission_type_text.set_text(f"미션: {self.mission_types[self.current_stage_idx]}")
+        self.controller_type_text.set_text(f"조종기(c): {self.current_stage.controller}")
 
     def fail_stage(self, ending_type : str):
         EventManager.publish("CHANGE_SCENE", "END_SCENE")
@@ -196,6 +200,15 @@ class GameScene(Scene):
     def set_holding_text(self, is_holding : bool):
         status_str = "화물 운송 중" if is_holding else "대기 중"
         self.holding_text.set_text("상태: " + status_str)
+
+    def change_controller(self):
+        for stage in self.stages:
+            if isinstance(stage.controller, ManualController):
+                stage.controller = PIDManualController(stage.drone)
+            elif isinstance(stage.controller, PIDManualController):
+                stage.controller = ManualController(stage.drone)
+        self.controller_type_text.set_text(f"조종기(c): {self.current_stage.controller}")
+
     #endregion
 
     def _publish_end_scene_info(self, status, ending_type : str):
@@ -221,6 +234,9 @@ class GameScene(Scene):
         return max(0, final_score)
     
     def update(self, dt):
+        if InputManager.is_key_pressed(pygame.K_c):
+            self.change_controller()
+
         if self.ui_timer > 0:
             self.ui_timer -= dt
             if self.ui_timer <= 0:

@@ -10,14 +10,20 @@ from managers.event_manager import EventManager
 
 class Drone(DynamicEntity):
     def __init__(
-        self, size : tuple[float, float], sprite : Surface, mass : float = 1.0, moment : float | None = None, 
+        self, size : tuple[float, float], sprite_sheets : list[Surface], mass : float = 1.0, moment : float | None = None, 
         position : Vector2 | None = None, velocity : Vector2 | None = None,
         angle : float = 0.0, angular_velocity : float = 0.0,
         collider_scale : tuple[float, float] = (1.0, 1.0)
     ):  
+        
+        self.sprite_frames = sprite_sheets if sprite_sheets else [Surface(size)]
+        self.current_frame_idx = 0
+        self.animation_timer = 0.0
+        self.animation_speed = 0.05
+
         transform = Transform(position, angle, size)
         super().__init__(
-            sprite=sprite,
+            sprite=self.sprite_frames[self.current_frame_idx],
             transform=transform,
             collider=RectCollider(size[0] * collider_scale[0], size[1] * collider_scale[1],  transform),
             mass=mass,
@@ -94,6 +100,18 @@ class Drone(DynamicEntity):
 
     #endregion
     
+    def _update_animation(self, dt):
+        if self.left_thrust > 0.1 or self.right_thrust > 0.1:
+            self.animation_timer += dt
+            if self.animation_timer >= self.animation_speed:
+                self.animation_timer = 0.0
+                self.current_frame_idx = (self.current_frame_idx + 1) % len(self.sprite_frames)
+                
+                self.sprite = self.sprite_frames[self.current_frame_idx]
+        else:
+            self.current_frame_idx = 0
+            self.sprite = self.sprite_frames[0]
+
     def update(self, dt):
         if abs(self.transform.angle) > (math.pi / 2) * 0.75:
             EventManager.publish("FAIL_STAGE", "제어 실패")
@@ -108,6 +126,7 @@ class Drone(DynamicEntity):
 
         self.rigidbody.apply_force(Vector2(0.0, self.left_thrust), self.left_arm_position, is_local=True)
         self.rigidbody.apply_force(Vector2(0.0, self.right_thrust), self.right_arm_position, is_local=True)
+        self._update_animation(dt)
 
         super().update(dt)
             

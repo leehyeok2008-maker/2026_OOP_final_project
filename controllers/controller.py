@@ -11,3 +11,6 @@ class Controller(ABC):
 
     def __call__(self, input):
        self.command(input)
+
+    def __str__(self):
+        return "조종기"
