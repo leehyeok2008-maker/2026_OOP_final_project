@@ -1,7 +1,8 @@
 import math
 import pygame
 from pygame import Vector2
-from entities import Entity, StaticEntity, DynamicEntity
+from .event_manager import EventManager
+from entities import Entity, StaticEntity, DynamicEntity, Drone, Cargo
 from physics import Collider, RectCollider, RigidBody2D
 from collections.abc import Iterable
 
@@ -185,6 +186,13 @@ class ColliderManager:
 
         if vel_along_normal > 0:
             return
+        
+        if relative_velocity.length() >= 4.0:
+            if isinstance(ea, Cargo) or isinstance(eb, Cargo):
+                EventManager.publish("FAIL_STAGE", "화물 충돌")
+            elif isinstance(ea, Drone) or isinstance(eb, Drone):
+                EventManager.publish("FAIL_STAGE", "드론 충돌")
+
 
         e = 0.3
 
