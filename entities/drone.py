@@ -115,14 +115,11 @@ class Drone(DynamicEntity):
     def update(self, dt):
         if abs(self.transform.angle) > (math.pi / 2) * 0.75:
             EventManager.publish("FAIL_STAGE", "제어 실패")
-        for c in self.collision_list: 
-            if isinstance(c, Tile) and self.rigidbody.velocity.length() > 3.0:
-                EventManager.publish("FAIL_STAGE", "드론 충돌") 
         EventManager.publish("SET_HOLDING_TEXT", self.is_holding)
         
         #공기저항
-        self.rigidbody.velocity *= 0.95
-        self.rigidbody.angular_velocity *= 0.95
+        self.rigidbody.velocity *= 0.97
+        self.rigidbody.angular_velocity *= 0.97
 
         self.rigidbody.apply_force(Vector2(0.0, self.left_thrust), self.left_arm_position, is_local=True)
         self.rigidbody.apply_force(Vector2(0.0, self.right_thrust), self.right_arm_position, is_local=True)

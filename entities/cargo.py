@@ -25,12 +25,9 @@ class Cargo(DynamicEntity):
         )
 
     def update(self, dt):
-        for c in self.collision_list: 
-            if isinstance(c, Tile) and self.rigidbody.velocity.length() > 2.0:
-                EventManager.publish("FAIL_STAGE", "화물 충돌") 
         #공기저항
-        self.rigidbody.velocity *= 0.95
-        self.rigidbody.angular_velocity *= 0.95
+        self.rigidbody.velocity *= 0.97
+        self.rigidbody.angular_velocity *= 0.97
         
         super().update(dt)
         
